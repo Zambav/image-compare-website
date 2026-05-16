@@ -1,6 +1,6 @@
 # Version
 
-Current version: **0.4.1**
+Current version: **0.5.0**
 
 ## Version notes
 
@@ -10,3 +10,4 @@ Current version: **0.4.1**
 - `0.3.0` - Recent files list plus flip, rotate, and reset image transform controls added
 - `0.4.0` - Candidate queue mode added for multiple B images with stepping controls and persisted queue state
 - `0.4.1` - Queue reliability fix so single B loads also initialize the candidate queue for prev/next navigation
+- `0.5.0` - GitHub Pages entrypoint added and repo prepared for public live hosting

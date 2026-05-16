@@ -17,6 +17,7 @@
 - Flip horizontal, flip vertical, rotate, and reset transform controls
 - Candidate queue controls for stepping through multiple B images against a fixed A reference
 - Queue reliability fix so single B loads also create a navigable candidate queue
+- GitHub Pages root entrypoint for live hosting from the current repo
 
 ### Changed
 - Promoted `image-compare v2.html` into a modular source version under `src/index.html`
@@ -29,3 +30,4 @@
 - Added queue status, prev/next controls, and persisted candidate queue state in session storage
 - Updated B upload handling to accept multi-file candidate batches
 - Made single-image B replacement flows initialize the queue state too, so prev/next has a consistent source of truth
+- Added a root `index.html` redirect so GitHub Pages can serve the app from the repo root cleanly

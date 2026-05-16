@@ -10,6 +10,8 @@ The project currently exists as standalone HTML prototypes:
 
 A lightweight project structure has now been added around those prototypes so development can move into a cleaner app layout without risking the original files.
 
+The repo is also prepared for GitHub Pages publishing with a root `index.html` that redirects into `src/index.html`.
+
 ## Project Structure
 
 ```text
