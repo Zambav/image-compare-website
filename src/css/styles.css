@@ -226,6 +226,9 @@ header {
   background: var(--acc-dim);
   color: var(--acc);
 }
+.tool-btn-subtle {
+  opacity: 0.65;
+}
 
 .recent-row {
   display: flex;
@@ -293,6 +296,9 @@ header {
 .saved-empty {
   font-size: 12px;
   color: var(--muted);
+}
+.metadata-head {
+  margin-top: 8px;
 }
 .saved-list {
   display: flex;
@@ -366,6 +372,54 @@ header {
   font-size: 11px;
   color: var(--muted);
   opacity: 0.85;
+}
+.meta-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.meta-block {
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.meta-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acc);
+}
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.meta-row strong {
+  color: var(--text);
+  text-align: right;
+  word-break: break-word;
+}
+.meta-empty {
+  font-size: 12px;
+  color: var(--muted);
+}
+.meta-chunk {
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 160px;
+  overflow: auto;
+  background: rgba(0,0,0,0.18);
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 11px;
+  color: var(--text);
 }
 
 .stage-wrap {

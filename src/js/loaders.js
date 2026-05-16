@@ -1,6 +1,7 @@
 import { S } from './state.js';
 import { dom, $ } from './dom.js';
 import { loadDimensions } from './helpers.js';
+import { extractMetadata, renderMetadataPanel } from './metadata.js';
 import { applyAspectRatio, render, updateInfo } from './viewer.js';
 import { scheduleSessionSave } from './session.js';
 import { addRecentFile } from './recent.js';
@@ -21,6 +22,7 @@ export async function loadFile(file, slot) {
 
   addRecentFile(file);
   window.dispatchEvent(new CustomEvent('recents-updated'));
+  const metadata = await extractMetadata(file, dim);
 
   if (slot === 'a') {
     if (S.srcA) URL.revokeObjectURL(S.srcA);
@@ -28,6 +30,7 @@ export async function loadFile(file, slot) {
     S.nameA = file.name;
     S.wA = dim.w;
     S.hA = dim.h;
+    S.metaA = metadata;
     dom.thumbA.style.backgroundImage = `url("${url}")`;
     dom.thumbA.classList.add('on');
     dom.dzAInner.style.opacity = '0';
@@ -42,6 +45,7 @@ export async function loadFile(file, slot) {
     S.nameB = file.name;
     S.wB = dim.w;
     S.hB = dim.h;
+    S.metaB = metadata;
     dom.thumbB.style.backgroundImage = `url("${url}")`;
     dom.thumbB.classList.add('on');
     dom.dzBInner.style.opacity = '0';
@@ -60,6 +64,7 @@ export async function loadFile(file, slot) {
 
     applyAspectRatio();
     updateInfo();
+    renderMetadataPanel();
     render();
     scheduleSessionSave();
   }

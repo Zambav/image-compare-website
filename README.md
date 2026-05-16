@@ -69,7 +69,9 @@ Image compare website/
 - flip horizontal, flip vertical, rotate, and reset transform controls
 - candidate queue on Image B with prev/next stepping against a fixed Image A reference
 - saved comparisons sidebar with manual save, timestamps, delete actions, and click-to-restore cards
-- synchronized zoom and pan with wheel zoom, Shift+drag pan, and reset view
+- synchronized zoom and pan with wheel zoom, Shift+drag pan, reset view, and clamped panning
+- export current comparison view to PNG
+- metadata sidebar showing file details and detected PNG text chunks
 - custom favicon and header logo from the provided brand image in `assets/`
 
 ## Recommended Next Refactor

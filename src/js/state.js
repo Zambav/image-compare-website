@@ -21,6 +21,8 @@ export const S = {
   panX: 0,
   panY: 0,
   panning: false,
+  metaA: null,
+  metaB: null,
   candidateQueue: [],
   currentCandidateIndex: 0,
   savedComparisons: [],

@@ -6,6 +6,8 @@ import { restoreSession, scheduleSessionSave } from './session.js';
 import { getRecentFiles } from './recent.js';
 import { nextCandidate, prevCandidate, refreshQueueStatus } from './queue.js';
 import { renderSavedComparisons, saveCurrentComparison } from './comparisons.js';
+import { exportCurrentComparison } from './export.js';
+import { renderMetadataPanel } from './metadata.js';
 
 function setMode(mode) {
   document.querySelectorAll('.mpill').forEach((btn) => {
@@ -91,6 +93,7 @@ function bindSliderDrag() {
     if (S.panning) {
       S.panX = startPanX + (e.clientX - panStartX);
       S.panY = startPanY + (e.clientY - panStartY);
+      clampPan();
       render();
       return;
     }
@@ -126,6 +129,7 @@ function bindSliderDrag() {
     if (S.panning && e.touches.length === 1) {
       S.panX = startPanX + (e.touches[0].clientX - panStartX);
       S.panY = startPanY + (e.touches[0].clientY - panStartY);
+      clampPan();
       render();
       return;
     }
@@ -242,6 +246,20 @@ function nudgeSlider(step) {
   scheduleSessionSave();
 }
 
+function clampPan() {
+  if (S.zoom <= 1) {
+    S.panX = 0;
+    S.panY = 0;
+    return;
+  }
+
+  const rect = dom.stageWrap.getBoundingClientRect();
+  const maxX = Math.max(0, ((rect.width * S.zoom) - rect.width) / 2);
+  const maxY = Math.max(0, ((rect.height * S.zoom) - rect.height) / 2);
+  S.panX = Math.max(-maxX, Math.min(maxX, S.panX));
+  S.panY = Math.max(-maxY, Math.min(maxY, S.panY));
+}
+
 function zoomBy(delta, clientX, clientY) {
   if (!S.ready) return;
   const rect = dom.stageWrap.getBoundingClientRect();
@@ -262,6 +280,7 @@ function zoomBy(delta, clientX, clientY) {
     S.panY = 0;
   }
 
+  clampPan();
   render();
   scheduleSessionSave();
 }
@@ -357,6 +376,12 @@ function bindSaveComparison() {
   });
 }
 
+function bindExport() {
+  dom.exportBtn.addEventListener('click', async () => {
+    await exportCurrentComparison();
+  });
+}
+
 function bindRecentFilesEvents() {
   window.addEventListener('recents-updated', renderRecentFiles);
 }
@@ -372,6 +397,7 @@ async function init() {
   bindTransformButtons();
   bindQueueButtons();
   bindSaveComparison();
+  bindExport();
   bindRecentFilesEvents();
   bindZoomPan();
   bindKeyboard();
@@ -380,6 +406,7 @@ async function init() {
   syncFullscreenClass();
   renderRecentFiles();
   renderSavedComparisons();
+  renderMetadataPanel();
   refreshQueueStatus();
 }
 

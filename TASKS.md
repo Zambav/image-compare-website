@@ -24,6 +24,8 @@
 - [ ] Decide whether queue mode stays, gets simplified, or gets replaced by saved-comparisons-first workflow
 - [x] Add zoom to cursor, then synchronized zoom + pan
 - [ ] Verify zoom and pan feel good across slider, dissolve, and toggle modes
+- [ ] Verify export output matches the on-screen comparison state closely enough for Discord/client sharing
+- [ ] Expand metadata extraction beyond basic file fields and PNG text snippets if ComfyUI payload parsing needs a richer UI
 - [ ] Add metadata panel with PNG chunk / EXIF parsing
 - [ ] Add diff map overlay mode
 - [ ] Add crop / region lock

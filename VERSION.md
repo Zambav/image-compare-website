@@ -1,6 +1,6 @@
 # Version
 
-Current version: **0.7.0**
+Current version: **0.8.0**
 
 ## Version notes
 
@@ -15,3 +15,4 @@ Current version: **0.7.0**
 - `0.6.0` - Saved comparisons sidebar added with restoreable comparison cards and persistent library state
 - `0.6.1` - Saved comparison cards upgraded with timestamps and delete controls
 - `0.7.0` - Synchronized zoom and pan added with wheel zoom, pan gestures, and persistent transform state
+- `0.8.0` - Export PNG, metadata panel, clamped pan behavior, and queue UI de-emphasis added in one workflow pass

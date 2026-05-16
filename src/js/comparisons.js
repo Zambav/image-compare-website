@@ -3,6 +3,7 @@ import { dom } from './dom.js';
 import { applyAspectRatio, render, updateInfo } from './viewer.js';
 import { scheduleSessionSave } from './session.js';
 import { setSingleCandidate } from './queue.js';
+import { renderMetadataPanel } from './metadata.js';
 
 const MAX_SAVED = 12;
 
@@ -110,6 +111,8 @@ export async function saveCurrentComparison() {
     zoom: S.zoom,
     panX: S.panX,
     panY: S.panY,
+    metaA: S.metaA,
+    metaB: S.metaB,
   };
 
   S.savedComparisons.unshift(item);
@@ -152,6 +155,8 @@ export function restoreSavedComparison(id) {
   S.zoom = Number.isFinite(item.zoom) ? item.zoom : 1;
   S.panX = Number.isFinite(item.panX) ? item.panX : 0;
   S.panY = Number.isFinite(item.panY) ? item.panY : 0;
+  S.metaA = item.metaA || null;
+  S.metaB = item.metaB || null;
   S.ready = true;
 
   dom.imgA.src = S.srcA;
@@ -172,6 +177,7 @@ export function restoreSavedComparison(id) {
   });
 
   setSingleCandidate({ src: S.srcB, name: S.nameB, w: S.wB, h: S.hB });
+  renderMetadataPanel();
   applyAspectRatio();
   updateInfo();
   render();

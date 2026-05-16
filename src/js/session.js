@@ -5,6 +5,7 @@ import { loadSession, saveSession } from './storage.js';
 import { loadDimensions } from './helpers.js';
 import { hydrateQueue, refreshQueueStatus } from './queue.js';
 import { hydrateSavedComparisons, renderSavedComparisons } from './comparisons.js';
+import { renderMetadataPanel } from './metadata.js';
 
 let persistTimer = null;
 let restoring = false;
@@ -96,6 +97,8 @@ function applyUiState(session) {
   S.zoom = Number.isFinite(session.zoom) ? session.zoom : 1;
   S.panX = Number.isFinite(session.panX) ? session.panX : 0;
   S.panY = Number.isFinite(session.panY) ? session.panY : 0;
+  S.metaA = session.metaA || null;
+  S.metaB = session.metaB || null;
 
   dom.dRange.value = String(S.dissolve);
   dom.dPct.textContent = Math.round(S.dissolve * 100) + '%';
@@ -131,6 +134,8 @@ export function scheduleSessionSave() {
         zoom: S.zoom,
         panX: S.panX,
         panY: S.panY,
+        metaA: S.metaA,
+        metaB: S.metaB,
         currentCandidateIndex: S.currentCandidateIndex,
         candidateQueue,
         savedComparisons: S.savedComparisons,
@@ -197,6 +202,7 @@ export async function restoreSession() {
     hydrateQueue(restoredQueue, session.currentCandidateIndex || 0);
     hydrateSavedComparisons(restoredSavedComparisons);
     renderSavedComparisons();
+    renderMetadataPanel();
     refreshQueueStatus();
     applyAspectRatio();
     updateInfo();

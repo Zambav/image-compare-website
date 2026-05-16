@@ -61,9 +61,10 @@
     <div class="queue-status" id="queue-status">Candidate 1 / 1</div>
     <div class="spacer"></div>
     <div class="tool-pills">
-      <button class="tool-btn" id="prev-candidate-btn">← Prev</button>
-      <button class="tool-btn" id="next-candidate-btn">Next →</button>
+      <button class="tool-btn tool-btn-subtle" id="prev-candidate-btn">← Prev</button>
+      <button class="tool-btn tool-btn-subtle" id="next-candidate-btn">Next →</button>
       <button class="tool-btn" id="save-comparison-btn">+ Save Compare</button>
+      <button class="tool-btn" id="export-btn">⇩ Export PNG</button>
       <button class="tool-btn" id="flip-h-btn">⇋ Flip H</button>
       <button class="tool-btn" id="flip-v-btn">⇵ Flip V</button>
       <button class="tool-btn" id="rotate-btn">↻ Rotate</button>
@@ -109,6 +110,14 @@
       </div>
       <div class="saved-list" id="saved-list">
         <div class="saved-empty">No saved comparisons yet</div>
+      </div>
+
+      <div class="saved-head metadata-head">
+        <div class="saved-title">Metadata</div>
+        <div class="saved-sub">Loaded image details and embedded data</div>
+      </div>
+      <div class="meta-panel" id="meta-panel">
+        <div class="saved-empty">Load images to inspect metadata</div>
       </div>
     </aside>
   </div>

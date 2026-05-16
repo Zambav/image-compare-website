@@ -15,7 +15,10 @@ function revokeQueueUrls(items = []) {
 function updateQueueStatus() {
   const total = Math.max(1, S.candidateQueue.length || (S.srcB ? 1 : 0));
   const current = Math.min(total, (S.currentCandidateIndex || 0) + 1);
-  dom.queueStatus.textContent = `Candidate ${current} / ${total}`;
+  dom.queueStatus.textContent = total > 1 ? `Candidate ${current} / ${total}` : 'Single compare active';
+  const showQueue = total > 1;
+  dom.prevCandidateBtn.style.display = showQueue ? 'inline-flex' : 'none';
+  dom.nextCandidateBtn.style.display = showQueue ? 'inline-flex' : 'none';
 }
 
 function syncCurrentCandidate() {
