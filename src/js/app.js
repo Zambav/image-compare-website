@@ -3,6 +3,7 @@ import { dom } from './dom.js';
 import { render, applyAspectRatio, updateInfo } from './viewer.js';
 import { setupDrop } from './loaders.js';
 import { restoreSession, scheduleSessionSave } from './session.js';
+import { getRecentFiles } from './recent.js';
 
 function setMode(mode) {
   document.querySelectorAll('.mpill').forEach((btn) => {
@@ -111,6 +112,44 @@ function syncFullscreenClass() {
   dom.body.classList.toggle('is-fullscreen', S.isFullscreen);
 }
 
+function renderRecentFiles() {
+  const recents = getRecentFiles();
+  if (!recents.length) {
+    dom.recentList.innerHTML = '<span class="recent-empty">No recent files yet</span>';
+    return;
+  }
+
+  dom.recentList.innerHTML = recents
+    .map((item) => `<span class="recent-chip">${item.name}</span>`)
+    .join('');
+}
+
+function resetImageTransforms() {
+  S.flipH = false;
+  S.flipV = false;
+  S.rotation = 0;
+  render();
+  scheduleSessionSave();
+}
+
+function rotateImage() {
+  S.rotation = (S.rotation + 90) % 360;
+  render();
+  scheduleSessionSave();
+}
+
+function toggleFlipH() {
+  S.flipH = !S.flipH;
+  render();
+  scheduleSessionSave();
+}
+
+function toggleFlipV() {
+  S.flipV = !S.flipV;
+  render();
+  scheduleSessionSave();
+}
+
 async function toggleFullscreen() {
   try {
     if (!document.fullscreenElement) {
@@ -183,6 +222,17 @@ function bindSwap() {
   dom.swapBtn.addEventListener('click', swapImages);
 }
 
+function bindTransformButtons() {
+  dom.flipHBtn.addEventListener('click', toggleFlipH);
+  dom.flipVBtn.addEventListener('click', toggleFlipV);
+  dom.rotateBtn.addEventListener('click', rotateImage);
+  dom.resetViewBtn.addEventListener('click', resetImageTransforms);
+}
+
+function bindRecentFilesEvents() {
+  window.addEventListener('recents-updated', renderRecentFiles);
+}
+
 async function init() {
   setupDrop('dz-a', 'file-a', 'a');
   setupDrop('dz-b', 'file-b', 'b');
@@ -191,10 +241,13 @@ async function init() {
   bindToggleClick();
   bindDissolve();
   bindSwap();
+  bindTransformButtons();
+  bindRecentFilesEvents();
   bindKeyboard();
   bindFullscreenTracking();
   await restoreSession();
   syncFullscreenClass();
+  renderRecentFiles();
 }
 
 init();

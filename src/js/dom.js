@@ -24,4 +24,9 @@ export const dom = {
   fileA: $('file-a'),
   fileB: $('file-b'),
   body: document.body,
+  flipHBtn: $('flip-h-btn'),
+  flipVBtn: $('flip-v-btn'),
+  rotateBtn: $('rotate-btn'),
+  resetViewBtn: $('reset-view-btn'),
+  recentList: $('recent-list'),
 };

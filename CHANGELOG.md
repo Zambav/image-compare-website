@@ -13,6 +13,8 @@
 - Keyboard slider nudging with arrow keys and larger Shift+nudge steps
 - Fullscreen mode with `F` shortcut and layout adjustments for focused viewing
 - `VERSION.md` to track project build progression
+- Recent files list backed by localStorage filename history
+- Flip horizontal, flip vertical, rotate, and reset transform controls
 
 ### Changed
 - Promoted `image-compare v2.html` into a modular source version under `src/index.html`
@@ -20,3 +22,5 @@
 - Added session persistence plumbing so the last loaded comparison and UI state can be restored on page load
 - Expanded shortcut hints in the UI to document nudge and fullscreen controls
 - Persist fullscreen state alongside comparison session state
+- Persist image transform state alongside comparison session state
+- Expanded the toolbar and added a recent-files strip below the controls

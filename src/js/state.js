@@ -14,4 +14,7 @@ export const S = {
   dragging: false,
   ready: false,
   isFullscreen: false,
+  flipH: false,
+  flipV: false,
+  rotation: 0,
 };

@@ -13,6 +13,18 @@ export function updateInfo() {
   dom.infoB.textContent = `B: ${S.nameB}  ${S.wB}×${S.hB}`;
 }
 
+function applyImageTransforms() {
+  const scaleX = S.flipH ? -1 : 1;
+  const scaleY = S.flipV ? -1 : 1;
+  const transform = `rotate(${S.rotation}deg) scale(${scaleX}, ${scaleY})`;
+  dom.imgA.style.transform = transform;
+  dom.imgB.style.transform = transform;
+
+  dom.flipHBtn.classList.toggle('is-on', S.flipH);
+  dom.flipVBtn.classList.toggle('is-on', S.flipV);
+  dom.rotateBtn.classList.toggle('is-on', S.rotation % 360 !== 0);
+}
+
 export function render() {
   if (!S.ready) return;
 
@@ -20,6 +32,7 @@ export function render() {
 
   dom.imgA.style.opacity = '1';
   dom.imgA.style.clipPath = 'none';
+  applyImageTransforms();
 
   if (S.mode === 'slider') {
     dom.imgB.style.opacity = '1';

@@ -63,6 +63,8 @@ Image compare website/
 - session memory via IndexedDB for the last loaded comparison
 - keyboard arrow key slider nudging, with Shift for larger steps
 - fullscreen mode via `F`
+- recent files strip using localStorage filename history
+- flip horizontal, flip vertical, rotate, and reset transform controls
 
 ## Recommended Next Refactor
 

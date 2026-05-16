@@ -3,6 +3,7 @@ import { dom, $ } from './dom.js';
 import { loadDimensions } from './helpers.js';
 import { applyAspectRatio, render, updateInfo } from './viewer.js';
 import { scheduleSessionSave } from './session.js';
+import { addRecentFile } from './recent.js';
 
 export async function loadFile(file, slot) {
   if (!file || !file.type.startsWith('image/')) return;
@@ -16,6 +17,9 @@ export async function loadFile(file, slot) {
     URL.revokeObjectURL(url);
     return;
   }
+
+  addRecentFile(file);
+  window.dispatchEvent(new CustomEvent('recents-updated'));
 
   if (slot === 'a') {
     if (S.srcA) URL.revokeObjectURL(S.srcA);

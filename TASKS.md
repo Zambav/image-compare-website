@@ -14,7 +14,8 @@
 - [ ] Verify session restore with real uploaded images in browser
 - [x] Add keyboard slider nudging and fullscreen mode
 - [ ] Verify arrow-key nudging and fullscreen UX with real loaded images
-- [ ] Add recent files list and image transforms
+- [x] Add recent files list and image transforms
+- [ ] Verify transform behavior with portrait and landscape images
 - [ ] Add multiple image slots / queue against a fixed reference image
 - [ ] Add zoom to cursor, then synchronized zoom + pan
 - [ ] Add metadata panel with PNG chunk / EXIF parsing

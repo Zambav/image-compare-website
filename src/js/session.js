@@ -55,6 +55,9 @@ function applyUiState(session) {
   S.dissolve = typeof session.dissolve === 'number' ? session.dissolve : 0.5;
   S.toggleFrame = session.toggleFrame || 'a';
   S.isFullscreen = !!session.isFullscreen;
+  S.flipH = !!session.flipH;
+  S.flipV = !!session.flipV;
+  S.rotation = Number.isFinite(session.rotation) ? session.rotation : 0;
 
   dom.dRange.value = String(S.dissolve);
   dom.dPct.textContent = Math.round(S.dissolve * 100) + '%';
@@ -83,6 +86,9 @@ export function scheduleSessionSave() {
         dissolve: S.dissolve,
         toggleFrame: S.toggleFrame,
         isFullscreen: S.isFullscreen,
+        flipH: S.flipH,
+        flipV: S.flipV,
+        rotation: S.rotation,
         imageA,
         imageB,
       });
