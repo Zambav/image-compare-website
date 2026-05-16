@@ -36,4 +36,5 @@ export const dom = {
   rotateBtn: $('rotate-btn'),
   resetViewBtn: $('reset-view-btn'),
   recentList: $('recent-list'),
+  headerResetBtn: $('header-reset-btn'),
 };

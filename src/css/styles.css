@@ -52,6 +52,23 @@ header {
   color: var(--acc);
 }
 .logo-sub { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+.header-reset-wrap { margin-left: auto; }
+.header-reset-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba(239,68,68,0.4);
+  color: #ef4444;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.header-reset-btn:hover {
+  background: rgba(239,68,68,0.12);
+  border-color: rgba(239,68,68,0.7);
+}
 
 .main {
   width: 100%;
@@ -319,6 +336,10 @@ header {
   background: var(--surf2);
   overflow: hidden;
   transition: border-color 0.15s, transform 0.15s;
+}
+.saved-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-1px);
 }
 .saved-delete {
   position: absolute;
