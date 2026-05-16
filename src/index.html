@@ -81,25 +81,27 @@
   </div>
 
   <div class="workspace-layout">
-    <div class="stage-wrap" id="stage-wrap">
-      <div class="empty-state" id="empty-state">
-        <div class="es-icon">◧</div>
-        <div class="es-title">No images loaded yet</div>
-        <div class="es-sub">Upload two images above, the viewer activates automatically once both are loaded.</div>
-      </div>
-
-      <div id="comp">
-        <img id="img-a" draggable="false" alt="Image A">
-        <img id="img-b" draggable="false" alt="Image B">
-
-        <div id="divider">
-          <div id="div-line"></div>
-          <div id="div-knob">◀▶</div>
+    <div class="stage-col">
+      <div class="stage-wrap" id="stage-wrap">
+        <div class="empty-state" id="empty-state">
+          <div class="es-icon">◧</div>
+          <div class="es-title">No images loaded yet</div>
+          <div class="es-sub">Upload two images above, the viewer activates automatically once both are loaded.</div>
         </div>
 
-        <div class="img-lbl" id="lbl-a">A</div>
-        <div class="img-lbl" id="lbl-b">B</div>
-        <div id="toggle-hint">click to toggle</div>
+        <div id="comp">
+          <img id="img-a" draggable="false" alt="Image A">
+          <img id="img-b" draggable="false" alt="Image B">
+
+          <div id="divider">
+            <div id="div-line"></div>
+            <div id="div-knob">◀▶</div>
+          </div>
+
+          <div class="img-lbl" id="lbl-a">A</div>
+          <div class="img-lbl" id="lbl-b">B</div>
+          <div id="toggle-hint">click to toggle</div>
+        </div>
       </div>
 
       <div class="info-bar" id="info-bar">
@@ -125,6 +127,10 @@
           <span class="kbd">Space</span>swap
         </div>
       </div>
+
+      <div class="meta-panel" id="meta-panel">
+        <div class="saved-empty">Load images to inspect metadata</div>
+      </div>
     </div>
 
     <aside class="saved-sidebar">
@@ -134,14 +140,6 @@
       </div>
       <div class="saved-list" id="saved-list">
         <div class="saved-empty">No saved comparisons yet</div>
-      </div>
-
-      <div class="saved-head metadata-head">
-        <div class="saved-title">Metadata</div>
-        <div class="saved-sub">Loaded image details and embedded data</div>
-      </div>
-      <div class="meta-panel" id="meta-panel">
-        <div class="saved-empty">Load images to inspect metadata</div>
       </div>
     </aside>
   </div>

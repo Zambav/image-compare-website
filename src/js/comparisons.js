@@ -62,11 +62,6 @@ export function renderSavedComparisons() {
     <article class="saved-card" data-compare-id="${item.id}">
       <button class="saved-card-main" data-compare-open="${item.id}" type="button">
         <div class="saved-preview" style="background-image:url('${item.preview}')"></div>
-        <div class="saved-meta">
-          <div class="saved-name">${item.label}</div>
-          <div class="saved-pair">${shortName(item.nameA)} → ${shortName(item.nameB)}</div>
-          <div class="saved-time">${formatSavedAt(item.savedAt)}</div>
-        </div>
       </button>
       <button class="saved-delete" data-compare-delete="${item.id}" type="button" aria-label="Delete saved comparison">×</button>
     </article>

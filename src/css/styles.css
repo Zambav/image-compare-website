@@ -270,6 +270,13 @@ header {
   align-items: start;
 }
 
+.stage-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 420px;
+}
+
 .saved-sidebar {
   background: var(--surf);
   border: 1px solid var(--border);
@@ -278,8 +285,7 @@ header {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: 420px;
-  margin-left: 40px;
+  min-height: 200px;
 }
 .saved-head {
   display: flex;
@@ -299,7 +305,7 @@ header {
   color: var(--muted);
 }
 .metadata-head {
-  margin-top: 8px;
+  display: none;
 }
 .saved-list {
   display: flex;
@@ -313,19 +319,6 @@ header {
   background: var(--surf2);
   overflow: hidden;
   transition: border-color 0.15s, transform 0.15s;
-}
-.saved-card:hover {
-  border-color: var(--border2);
-  transform: translateY(-1px);
-}
-.saved-card-main {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: none;
-  color: inherit;
-  cursor: pointer;
 }
 .saved-delete {
   position: absolute;
@@ -528,6 +521,9 @@ header {
   font-family: 'Space Mono', monospace;
   font-size: 10px; letter-spacing: 0.06em;
   color: var(--muted);
+  padding: 10px 14px;
+  background: var(--surf);
+  border-top: 1px solid var(--border);
 }
 .info-bar.on { display: flex; }
 .info-dot {
