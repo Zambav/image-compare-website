@@ -3,6 +3,7 @@ import { dom } from './dom.js';
 import { render, applyAspectRatio, updateInfo } from './viewer.js';
 import { setupDrop } from './loaders.js';
 import { restoreSession, scheduleSessionSave } from './session.js';
+import { clearSession } from './storage.js';
 import { getRecentFiles } from './recent.js';
 import { nextCandidate, prevCandidate, refreshQueueStatus } from './queue.js';
 import { renderSavedComparisons, saveCurrentComparison } from './comparisons.js';
@@ -386,7 +387,7 @@ function bindRecentFilesEvents() {
   window.addEventListener('recents-updated', renderRecentFiles);
 }
 
-function resetAll() {
+async function resetAll() {
   if (!window.confirm('Reset everything and clear all saved comparisons?')) return;
   S.savedComparisons = [];
   S.srcA = null;
@@ -435,7 +436,12 @@ function resetAll() {
   renderSavedComparisons();
   renderMetadataPanel();
   refreshQueueStatus();
-  scheduleSessionSave();
+
+  try {
+    await clearSession();
+  } catch (e) {
+    console.warn('clearSession failed', e);
+  }
 }
 
 function bindResetButton() {
