@@ -112,8 +112,10 @@ header {
 }
 .dz-thumb {
   position: absolute; inset: 0;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
+  background-repeat: no-repeat;
+  background-color: #111216;
   border-radius: var(--r);
   opacity: 0;
   transition: opacity 0.25s;
