@@ -3,6 +3,7 @@ import { dom } from './dom.js';
 import { applyAspectRatio, render, updateInfo } from './viewer.js';
 import { loadSession, saveSession } from './storage.js';
 import { loadDimensions } from './helpers.js';
+import { hydrateQueue, refreshQueueStatus } from './queue.js';
 
 let persistTimer = null;
 let restoring = false;
@@ -44,6 +45,35 @@ async function buildImageRecord(src, name) {
   };
 }
 
+async function buildQueueRecords(items) {
+  return Promise.all((items || []).map(async (item) => {
+    const record = await buildImageRecord(item.src, item.name);
+    return {
+      ...record,
+      w: item.w,
+      h: item.h,
+    };
+  }));
+}
+
+async function restoreQueueRecords(items) {
+  const queue = [];
+
+  for (const item of items || []) {
+    if (!item?.dataUrl) continue;
+    const blob = dataUrlToBlob(item.dataUrl);
+    const src = URL.createObjectURL(blob);
+    queue.push({
+      src,
+      name: item.name || 'Candidate',
+      w: item.w,
+      h: item.h,
+    });
+  }
+
+  return queue;
+}
+
 function setThumb(element, url) {
   element.style.backgroundImage = `url("${url}")`;
   element.classList.add('on');
@@ -74,9 +104,10 @@ export function scheduleSessionSave() {
 
   persistTimer = setTimeout(async () => {
     try {
-      const [imageA, imageB] = await Promise.all([
+      const [imageA, imageB, candidateQueue] = await Promise.all([
         buildImageRecord(S.srcA, S.nameA),
         buildImageRecord(S.srcB, S.nameB),
+        buildQueueRecords(S.candidateQueue),
       ]);
 
       await saveSession({
@@ -89,6 +120,8 @@ export function scheduleSessionSave() {
         flipH: S.flipH,
         flipV: S.flipV,
         rotation: S.rotation,
+        currentCandidateIndex: S.currentCandidateIndex,
+        candidateQueue,
         imageA,
         imageB,
       });
@@ -117,6 +150,7 @@ export async function restoreSession() {
     const blobB = dataUrlToBlob(session.imageB.dataUrl);
     const urlA = URL.createObjectURL(blobA);
     const urlB = URL.createObjectURL(blobB);
+    const restoredQueue = await restoreQueueRecords(session.candidateQueue || []);
 
     const [dimA, dimB] = await Promise.all([
       loadDimensions(urlA),
@@ -147,6 +181,8 @@ export async function restoreSession() {
     setThumb(dom.thumbB, S.srcB);
 
     applyUiState(session);
+    hydrateQueue(restoredQueue, session.currentCandidateIndex || 0);
+    refreshQueueStatus();
     applyAspectRatio();
     updateInfo();
     render();

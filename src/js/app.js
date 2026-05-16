@@ -4,6 +4,7 @@ import { render, applyAspectRatio, updateInfo } from './viewer.js';
 import { setupDrop } from './loaders.js';
 import { restoreSession, scheduleSessionSave } from './session.js';
 import { getRecentFiles } from './recent.js';
+import { nextCandidate, prevCandidate, refreshQueueStatus } from './queue.js';
 
 function setMode(mode) {
   document.querySelectorAll('.mpill').forEach((btn) => {
@@ -204,10 +205,24 @@ function bindKeyboard() {
       }
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      nudgeSlider(e.shiftKey ? -0.05 : -0.01);
+      if (e.altKey) {
+        prevCandidate();
+      } else {
+        nudgeSlider(e.shiftKey ? -0.05 : -0.01);
+      }
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
-      nudgeSlider(e.shiftKey ? 0.05 : 0.01);
+      if (e.altKey) {
+        nextCandidate();
+      } else {
+        nudgeSlider(e.shiftKey ? 0.05 : 0.01);
+      }
+    } else if (e.key === '[') {
+      e.preventDefault();
+      prevCandidate();
+    } else if (e.key === ']') {
+      e.preventDefault();
+      nextCandidate();
     } else if (k === 'f') {
       e.preventDefault();
       toggleFullscreen();
@@ -229,6 +244,11 @@ function bindTransformButtons() {
   dom.resetViewBtn.addEventListener('click', resetImageTransforms);
 }
 
+function bindQueueButtons() {
+  dom.prevCandidateBtn.addEventListener('click', prevCandidate);
+  dom.nextCandidateBtn.addEventListener('click', nextCandidate);
+}
+
 function bindRecentFilesEvents() {
   window.addEventListener('recents-updated', renderRecentFiles);
 }
@@ -242,12 +262,14 @@ async function init() {
   bindDissolve();
   bindSwap();
   bindTransformButtons();
+  bindQueueButtons();
   bindRecentFilesEvents();
   bindKeyboard();
   bindFullscreenTracking();
   await restoreSession();
   syncFullscreenClass();
   renderRecentFiles();
+  refreshQueueStatus();
 }
 
 init();

@@ -29,7 +29,7 @@
       </div>
     </div>
     <div class="dropzone" id="dz-b">
-      <input type="file" accept="image/*" id="file-b">
+      <input type="file" accept="image/*" id="file-b" multiple>
       <div class="dz-thumb" id="thumb-b"></div>
       <div class="dz-overlay">↑ replace image</div>
       <div class="dz-inner" id="dz-b-inner">
@@ -54,8 +54,11 @@
       <span id="d-pct" style="min-width:34px;text-align:right;">50%</span>
     </div>
 
+    <div class="queue-status" id="queue-status">Candidate 1 / 1</div>
     <div class="spacer"></div>
     <div class="tool-pills">
+      <button class="tool-btn" id="prev-candidate-btn">← Prev</button>
+      <button class="tool-btn" id="next-candidate-btn">Next →</button>
       <button class="tool-btn" id="flip-h-btn">⇋ Flip H</button>
       <button class="tool-btn" id="flip-v-btn">⇵ Flip V</button>
       <button class="tool-btn" id="rotate-btn">↻ Rotate</button>
@@ -107,7 +110,8 @@
       <span class="kbd">S</span>slider
       <span class="kbd">D</span>dissolve
       <span class="kbd">T</span>toggle
-      <span class="kbd">← →</span>nudge
+      <span class="kbd">← →</span>nudge / queue
+      <span class="kbd">[ ]</span>prev/next candidate
       <span class="kbd">F</span>fullscreen
       <span class="kbd">Space</span>swap
     </div>

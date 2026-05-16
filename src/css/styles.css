@@ -181,6 +181,15 @@ header {
   border: 2px solid var(--bg);
   box-shadow: 0 0 0 1.5px var(--acc);
 }
+.queue-status {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 2px;
+}
+
 .spacer { flex: 1; }
 .tool-pills {
   display: flex;

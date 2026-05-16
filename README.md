@@ -65,6 +65,7 @@ Image compare website/
 - fullscreen mode via `F`
 - recent files strip using localStorage filename history
 - flip horizontal, flip vertical, rotate, and reset transform controls
+- candidate queue on Image B with prev/next stepping against a fixed Image A reference
 
 ## Recommended Next Refactor
 

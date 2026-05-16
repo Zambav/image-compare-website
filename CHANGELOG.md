@@ -15,6 +15,7 @@
 - `VERSION.md` to track project build progression
 - Recent files list backed by localStorage filename history
 - Flip horizontal, flip vertical, rotate, and reset transform controls
+- Candidate queue controls for stepping through multiple B images against a fixed A reference
 
 ### Changed
 - Promoted `image-compare v2.html` into a modular source version under `src/index.html`
@@ -24,3 +25,5 @@
 - Persist fullscreen state alongside comparison session state
 - Persist image transform state alongside comparison session state
 - Expanded the toolbar and added a recent-files strip below the controls
+- Added queue status, prev/next controls, and persisted candidate queue state in session storage
+- Updated B upload handling to accept multi-file candidate batches

@@ -1,6 +1,6 @@
 # Version
 
-Current version: **0.3.0**
+Current version: **0.4.0**
 
 ## Version notes
 
@@ -8,3 +8,4 @@ Current version: **0.3.0**
 - `0.1.1` - Session memory added with IndexedDB restore for the last comparison state
 - `0.2.0` - Keyboard slider nudging and fullscreen mode added
 - `0.3.0` - Recent files list plus flip, rotate, and reset image transform controls added
+- `0.4.0` - Candidate queue mode added for multiple B images with stepping controls and persisted queue state

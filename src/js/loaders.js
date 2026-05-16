@@ -4,6 +4,7 @@ import { loadDimensions } from './helpers.js';
 import { applyAspectRatio, render, updateInfo } from './viewer.js';
 import { scheduleSessionSave } from './session.js';
 import { addRecentFile } from './recent.js';
+import { replaceCandidateQueue } from './queue.js';
 
 export async function loadFile(file, slot) {
   if (!file || !file.type.startsWith('image/')) return;
@@ -59,6 +60,23 @@ export async function loadFile(file, slot) {
   }
 }
 
+export async function loadFiles(files, slot) {
+  const list = Array.from(files || []).filter((file) => file?.type?.startsWith('image/'));
+  if (!list.length) return;
+
+  for (const file of list) {
+    addRecentFile(file);
+  }
+  window.dispatchEvent(new CustomEvent('recents-updated'));
+
+  if (slot === 'b' && list.length > 1) {
+    await replaceCandidateQueue(list);
+    return;
+  }
+
+  await loadFile(list[0], slot);
+}
+
 export function setupDrop(dzId, fileId, slot) {
   const dz = $(dzId);
   const input = $(fileId);
@@ -73,11 +91,11 @@ export function setupDrop(dzId, fileId, slot) {
   dz.addEventListener('drop', (e) => {
     e.preventDefault();
     dz.classList.remove('over');
-    if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0], slot);
+    if (e.dataTransfer.files?.length) loadFiles(e.dataTransfer.files, slot);
   });
 
   input.addEventListener('change', () => {
-    if (input.files[0]) loadFile(input.files[0], slot);
+    if (input.files?.length) loadFiles(input.files, slot);
     input.value = '';
   });
 }

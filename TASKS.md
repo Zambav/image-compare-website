@@ -16,7 +16,8 @@
 - [ ] Verify arrow-key nudging and fullscreen UX with real loaded images
 - [x] Add recent files list and image transforms
 - [ ] Verify transform behavior with portrait and landscape images
-- [ ] Add multiple image slots / queue against a fixed reference image
+- [x] Add multiple image slots / queue against a fixed reference image
+- [ ] Verify multi-candidate stepping with real image batches and persisted restore
 - [ ] Add zoom to cursor, then synchronized zoom + pan
 - [ ] Add metadata panel with PNG chunk / EXIF parsing
 - [ ] Add diff map overlay mode

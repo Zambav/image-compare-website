@@ -17,4 +17,6 @@ export const S = {
   flipH: false,
   flipV: false,
   rotation: 0,
+  candidateQueue: [],
+  currentCandidateIndex: 0,
 };
