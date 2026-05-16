@@ -101,6 +101,30 @@
         <div class="img-lbl" id="lbl-b">B</div>
         <div id="toggle-hint">click to toggle</div>
       </div>
+
+      <div class="info-bar" id="info-bar">
+        <div class="info-item">
+          <span class="info-dot" style="background:var(--acc)"></span>
+          <span id="info-a">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-dot" style="background:var(--acc2)"></span>
+          <span id="info-b">—</span>
+        </div>
+        <div style="flex:1"></div>
+        <div style="color:var(--muted);opacity:0.55;display:flex;align-items:center;flex-wrap:wrap;gap:2px;">
+          <span class="kbd">S</span>slider
+          <span class="kbd">D</span>dissolve
+          <span class="kbd">T</span>toggle
+          <span class="kbd">← →</span>nudge / queue
+          <span class="kbd">[ ]</span>prev/next candidate
+          <span class="kbd">wheel</span>zoom
+          <span class="kbd">shift+drag</span>pan
+          <span class="kbd">0</span>reset view
+          <span class="kbd">F</span>fullscreen
+          <span class="kbd">Space</span>swap
+        </div>
+      </div>
     </div>
 
     <aside class="saved-sidebar">
@@ -120,30 +144,6 @@
         <div class="saved-empty">Load images to inspect metadata</div>
       </div>
     </aside>
-  </div>
-
-  <div class="info-bar" id="info-bar">
-    <div class="info-item">
-      <span class="info-dot" style="background:var(--acc)"></span>
-      <span id="info-a">—</span>
-    </div>
-    <div class="info-item">
-      <span class="info-dot" style="background:var(--acc2)"></span>
-      <span id="info-b">—</span>
-    </div>
-    <div style="flex:1"></div>
-    <div style="color:var(--muted);opacity:0.55;display:flex;align-items:center;flex-wrap:wrap;gap:2px;">
-      <span class="kbd">S</span>slider
-      <span class="kbd">D</span>dissolve
-      <span class="kbd">T</span>toggle
-      <span class="kbd">← →</span>nudge / queue
-      <span class="kbd">[ ]</span>prev/next candidate
-      <span class="kbd">wheel</span>zoom
-      <span class="kbd">shift+drag</span>pan
-      <span class="kbd">0</span>reset view
-      <span class="kbd">F</span>fullscreen
-      <span class="kbd">Space</span>swap
-    </div>
   </div>
 
 </div>

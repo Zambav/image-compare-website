@@ -265,7 +265,7 @@ header {
 
 .workspace-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
+  grid-template-columns: minmax(0, 1fr) 180px;
   gap: 18px;
   align-items: start;
 }
@@ -279,6 +279,7 @@ header {
   flex-direction: column;
   gap: 12px;
   min-height: 420px;
+  margin-left: 40px;
 }
 .saved-head {
   display: flex;
