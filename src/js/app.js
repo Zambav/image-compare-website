@@ -52,8 +52,35 @@ function bindModeButtons() {
 }
 
 function bindSliderDrag() {
+  let panStartX = 0;
+  let panStartY = 0;
+  let startPanX = 0;
+  let startPanY = 0;
+
+  const startPan = (clientX, clientY) => {
+    S.panning = true;
+    panStartX = clientX;
+    panStartY = clientY;
+    startPanX = S.panX;
+    startPanY = S.panY;
+    render();
+  };
+
+  dom.stageWrap.addEventListener('contextmenu', (e) => {
+    if (S.zoom > 1) e.preventDefault();
+  });
+
   dom.stageWrap.addEventListener('mousedown', (e) => {
-    if (!S.ready || S.mode !== 'slider') return;
+    if (!S.ready) return;
+
+    const wantsPan = (S.zoom > 1 && e.button === 2) || (S.zoom > 1 && e.shiftKey);
+    if (wantsPan) {
+      startPan(e.clientX, e.clientY);
+      e.preventDefault();
+      return;
+    }
+
+    if (S.mode !== 'slider' || e.button !== 0) return;
     S.dragging = true;
     S.pos = getRelX(e);
     render();
@@ -61,6 +88,12 @@ function bindSliderDrag() {
   });
 
   document.addEventListener('mousemove', (e) => {
+    if (S.panning) {
+      S.panX = startPanX + (e.clientX - panStartX);
+      S.panY = startPanY + (e.clientY - panStartY);
+      render();
+      return;
+    }
     if (!S.dragging) return;
     S.pos = getRelX(e);
     render();
@@ -68,18 +101,34 @@ function bindSliderDrag() {
 
   document.addEventListener('mouseup', () => {
     const wasDragging = S.dragging;
+    const wasPanning = S.panning;
     S.dragging = false;
-    if (wasDragging) scheduleSessionSave();
+    S.panning = false;
+    if (wasDragging || wasPanning) {
+      render();
+      scheduleSessionSave();
+    }
   });
 
   dom.stageWrap.addEventListener('touchstart', (e) => {
-    if (!S.ready || S.mode !== 'slider') return;
+    if (!S.ready) return;
+    if (S.zoom > 1 && e.touches.length === 1) {
+      startPan(e.touches[0].clientX, e.touches[0].clientY);
+      return;
+    }
+    if (S.mode !== 'slider') return;
     S.dragging = true;
     S.pos = getRelX(e);
     render();
   }, { passive: true });
 
   document.addEventListener('touchmove', (e) => {
+    if (S.panning && e.touches.length === 1) {
+      S.panX = startPanX + (e.touches[0].clientX - panStartX);
+      S.panY = startPanY + (e.touches[0].clientY - panStartY);
+      render();
+      return;
+    }
     if (!S.dragging) return;
     S.pos = getRelX(e);
     render();
@@ -87,8 +136,13 @@ function bindSliderDrag() {
 
   document.addEventListener('touchend', () => {
     const wasDragging = S.dragging;
+    const wasPanning = S.panning;
     S.dragging = false;
-    if (wasDragging) scheduleSessionSave();
+    S.panning = false;
+    if (wasDragging || wasPanning) {
+      render();
+      scheduleSessionSave();
+    }
   });
 }
 
@@ -130,6 +184,9 @@ function resetImageTransforms() {
   S.flipH = false;
   S.flipV = false;
   S.rotation = 0;
+  S.zoom = 1;
+  S.panX = 0;
+  S.panY = 0;
   render();
   scheduleSessionSave();
 }
@@ -185,6 +242,39 @@ function nudgeSlider(step) {
   scheduleSessionSave();
 }
 
+function zoomBy(delta, clientX, clientY) {
+  if (!S.ready) return;
+  const rect = dom.stageWrap.getBoundingClientRect();
+  const beforeZoom = S.zoom;
+  const nextZoom = Math.max(1, Math.min(8, Number((S.zoom + delta).toFixed(3))));
+  if (nextZoom === beforeZoom) return;
+
+  const cx = clientX - rect.left - rect.width / 2;
+  const cy = clientY - rect.top - rect.height / 2;
+  const ratio = nextZoom / beforeZoom;
+
+  S.panX = (S.panX - cx) * ratio + cx;
+  S.panY = (S.panY - cy) * ratio + cy;
+  S.zoom = nextZoom;
+
+  if (S.zoom === 1) {
+    S.panX = 0;
+    S.panY = 0;
+  }
+
+  render();
+  scheduleSessionSave();
+}
+
+function bindZoomPan() {
+  dom.stageWrap.addEventListener('wheel', (e) => {
+    if (!S.ready) return;
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.12 : -0.12;
+    zoomBy(delta, e.clientX, e.clientY);
+  }, { passive: false });
+}
+
 function bindKeyboard() {
   document.addEventListener('keydown', (e) => {
     if (!S.ready) return;
@@ -224,6 +314,17 @@ function bindKeyboard() {
     } else if (e.key === ']') {
       e.preventDefault();
       nextCandidate();
+    } else if (k === '0') {
+      e.preventDefault();
+      resetImageTransforms();
+    } else if (k === '+' || e.key === '=') {
+      e.preventDefault();
+      const rect = dom.stageWrap.getBoundingClientRect();
+      zoomBy(0.12, rect.left + rect.width / 2, rect.top + rect.height / 2);
+    } else if (k === '-' || e.key === '_') {
+      e.preventDefault();
+      const rect = dom.stageWrap.getBoundingClientRect();
+      zoomBy(-0.12, rect.left + rect.width / 2, rect.top + rect.height / 2);
     } else if (k === 'f') {
       e.preventDefault();
       toggleFullscreen();
@@ -272,6 +373,7 @@ async function init() {
   bindQueueButtons();
   bindSaveComparison();
   bindRecentFilesEvents();
+  bindZoomPan();
   bindKeyboard();
   bindFullscreenTracking();
   await restoreSession();

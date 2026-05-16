@@ -16,13 +16,16 @@ export function updateInfo() {
 function applyImageTransforms() {
   const scaleX = S.flipH ? -1 : 1;
   const scaleY = S.flipV ? -1 : 1;
-  const transform = `rotate(${S.rotation}deg) scale(${scaleX}, ${scaleY})`;
+  const transform = `translate(${S.panX}px, ${S.panY}px) rotate(${S.rotation}deg) scale(${S.zoom * scaleX}, ${S.zoom * scaleY})`;
   dom.imgA.style.transform = transform;
   dom.imgB.style.transform = transform;
+  dom.imgA.style.transformOrigin = 'center center';
+  dom.imgB.style.transformOrigin = 'center center';
 
   dom.flipHBtn.classList.toggle('is-on', S.flipH);
   dom.flipVBtn.classList.toggle('is-on', S.flipV);
   dom.rotateBtn.classList.toggle('is-on', S.rotation % 360 !== 0);
+  dom.resetViewBtn.classList.toggle('is-on', S.zoom > 1 || S.panX !== 0 || S.panY !== 0);
 }
 
 export function render() {
@@ -47,7 +50,7 @@ export function render() {
     dom.lblB.textContent = stripExt(S.nameB);
     dom.tHint.style.display = 'none';
 
-    dom.stageWrap.style.cursor = 'col-resize';
+    dom.stageWrap.style.cursor = S.panning ? 'grabbing' : (S.zoom > 1 ? 'grab' : 'col-resize');
   } else if (S.mode === 'dissolve') {
     dom.imgB.style.opacity = String(S.dissolve);
     dom.imgB.style.clipPath = 'none';
@@ -57,13 +60,13 @@ export function render() {
     dom.lblB.style.display = 'none';
     dom.tHint.style.display = 'none';
 
-    dom.stageWrap.style.cursor = 'default';
+    dom.stageWrap.style.cursor = S.panning ? 'grabbing' : (S.zoom > 1 ? 'grab' : 'default');
   } else {
     dom.imgB.style.clipPath = 'none';
     dom.divider.style.display = 'none';
     dom.lblB.style.display = 'none';
     dom.tHint.style.display = 'block';
-    dom.stageWrap.style.cursor = 'pointer';
+    dom.stageWrap.style.cursor = S.panning ? 'grabbing' : (S.zoom > 1 ? 'grab' : 'pointer');
 
     if (S.toggleFrame === 'a') {
       dom.imgB.style.opacity = '0';

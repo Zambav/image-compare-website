@@ -401,6 +401,8 @@ header {
   object-fit: contain;
   object-position: center;
   display: block;
+  will-change: transform;
+  user-select: none;
 }
 
 #divider {

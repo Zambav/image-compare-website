@@ -93,6 +93,9 @@ function applyUiState(session) {
   S.flipH = !!session.flipH;
   S.flipV = !!session.flipV;
   S.rotation = Number.isFinite(session.rotation) ? session.rotation : 0;
+  S.zoom = Number.isFinite(session.zoom) ? session.zoom : 1;
+  S.panX = Number.isFinite(session.panX) ? session.panX : 0;
+  S.panY = Number.isFinite(session.panY) ? session.panY : 0;
 
   dom.dRange.value = String(S.dissolve);
   dom.dPct.textContent = Math.round(S.dissolve * 100) + '%';
@@ -125,6 +128,9 @@ export function scheduleSessionSave() {
         flipH: S.flipH,
         flipV: S.flipV,
         rotation: S.rotation,
+        zoom: S.zoom,
+        panX: S.panX,
+        panY: S.panY,
         currentCandidateIndex: S.currentCandidateIndex,
         candidateQueue,
         savedComparisons: S.savedComparisons,

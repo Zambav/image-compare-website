@@ -22,7 +22,8 @@
 - [ ] Verify GitHub Pages deployment after publish
 - [ ] Verify saved-comparison restore flow with real user image sets
 - [ ] Decide whether queue mode stays, gets simplified, or gets replaced by saved-comparisons-first workflow
-- [ ] Add zoom to cursor, then synchronized zoom + pan
+- [x] Add zoom to cursor, then synchronized zoom + pan
+- [ ] Verify zoom and pan feel good across slider, dissolve, and toggle modes
 - [ ] Add metadata panel with PNG chunk / EXIF parsing
 - [ ] Add diff map overlay mode
 - [ ] Add crop / region lock

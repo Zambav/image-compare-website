@@ -107,6 +107,9 @@ export async function saveCurrentComparison() {
     flipH: S.flipH,
     flipV: S.flipV,
     rotation: S.rotation,
+    zoom: S.zoom,
+    panX: S.panX,
+    panY: S.panY,
   };
 
   S.savedComparisons.unshift(item);
@@ -146,6 +149,9 @@ export function restoreSavedComparison(id) {
   S.flipH = !!item.flipH;
   S.flipV = !!item.flipV;
   S.rotation = Number.isFinite(item.rotation) ? item.rotation : 0;
+  S.zoom = Number.isFinite(item.zoom) ? item.zoom : 1;
+  S.panX = Number.isFinite(item.panX) ? item.panX : 0;
+  S.panY = Number.isFinite(item.panY) ? item.panY : 0;
   S.ready = true;
 
   dom.imgA.src = S.srcA;

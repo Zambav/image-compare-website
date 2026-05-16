@@ -1,6 +1,6 @@
 # Version
 
-Current version: **0.6.1**
+Current version: **0.7.0**
 
 ## Version notes
 
@@ -14,3 +14,4 @@ Current version: **0.6.1**
 - `0.5.1` - Custom logo and favicon wiring added from the provided assets image
 - `0.6.0` - Saved comparisons sidebar added with restoreable comparison cards and persistent library state
 - `0.6.1` - Saved comparison cards upgraded with timestamps and delete controls
+- `0.7.0` - Synchronized zoom and pan added with wheel zoom, pan gestures, and persistent transform state
