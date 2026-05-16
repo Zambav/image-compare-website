@@ -10,6 +10,17 @@ function shortName(name) {
   return (name || 'Untitled').replace(/\.[^.]+$/, '');
 }
 
+function formatSavedAt(value) {
+  if (!value) return 'just now';
+  const date = new Date(value);
+  return date.toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
 function dataUrlToBlob(dataUrl) {
   const [meta = '', body = ''] = (dataUrl || '').split(',');
   const mimeMatch = meta.match(/data:([^;]+);base64/);
@@ -47,17 +58,28 @@ export function renderSavedComparisons() {
   }
 
   dom.savedList.innerHTML = S.savedComparisons.map((item) => `
-    <button class="saved-card" data-compare-id="${item.id}" type="button">
-      <div class="saved-preview" style="background-image:url('${item.preview}')"></div>
-      <div class="saved-meta">
-        <div class="saved-name">${item.label}</div>
-        <div class="saved-pair">${shortName(item.nameA)} → ${shortName(item.nameB)}</div>
-      </div>
-    </button>
+    <article class="saved-card" data-compare-id="${item.id}">
+      <button class="saved-card-main" data-compare-open="${item.id}" type="button">
+        <div class="saved-preview" style="background-image:url('${item.preview}')"></div>
+        <div class="saved-meta">
+          <div class="saved-name">${item.label}</div>
+          <div class="saved-pair">${shortName(item.nameA)} → ${shortName(item.nameB)}</div>
+          <div class="saved-time">${formatSavedAt(item.savedAt)}</div>
+        </div>
+      </button>
+      <button class="saved-delete" data-compare-delete="${item.id}" type="button" aria-label="Delete saved comparison">×</button>
+    </article>
   `).join('');
 
-  dom.savedList.querySelectorAll('[data-compare-id]').forEach((node) => {
-    node.addEventListener('click', () => restoreSavedComparison(node.dataset.compareId));
+  dom.savedList.querySelectorAll('[data-compare-open]').forEach((node) => {
+    node.addEventListener('click', () => restoreSavedComparison(node.dataset.compareOpen));
+  });
+
+  dom.savedList.querySelectorAll('[data-compare-delete]').forEach((node) => {
+    node.addEventListener('click', (event) => {
+      event.stopPropagation();
+      deleteSavedComparison(node.dataset.compareDelete);
+    });
   });
 }
 
@@ -71,6 +93,7 @@ export async function saveCurrentComparison() {
 
   const item = {
     id: `cmp-${Date.now()}`,
+    savedAt: Date.now(),
     label: `${shortName(S.nameA)} vs ${shortName(S.nameB)}`,
     preview: imageB.dataUrl,
     nameA: S.nameA,
@@ -88,6 +111,12 @@ export async function saveCurrentComparison() {
 
   S.savedComparisons.unshift(item);
   S.savedComparisons = S.savedComparisons.slice(0, MAX_SAVED);
+  renderSavedComparisons();
+  scheduleSessionSave();
+}
+
+export function deleteSavedComparison(id) {
+  S.savedComparisons = S.savedComparisons.filter((entry) => entry.id !== id);
   renderSavedComparisons();
   scheduleSessionSave();
 }

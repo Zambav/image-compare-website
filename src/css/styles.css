@@ -300,16 +300,42 @@ header {
   gap: 10px;
 }
 .saved-card {
+  position: relative;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--surf2);
   overflow: hidden;
-  cursor: pointer;
   transition: border-color 0.15s, transform 0.15s;
 }
 .saved-card:hover {
   border-color: var(--border2);
   transform: translateY(-1px);
+}
+.saved-card-main {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+.saved-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  cursor: pointer;
+  line-height: 1;
+}
+.saved-delete:hover {
+  background: rgba(239,68,68,0.9);
+  border-color: rgba(239,68,68,0.9);
 }
 .saved-preview {
   aspect-ratio: 16 / 9;
@@ -335,6 +361,11 @@ header {
   font-size: 10px;
   letter-spacing: 0.04em;
   color: var(--muted);
+}
+.saved-time {
+  font-size: 11px;
+  color: var(--muted);
+  opacity: 0.85;
 }
 
 .stage-wrap {

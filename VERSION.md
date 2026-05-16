@@ -1,6 +1,6 @@
 # Version
 
-Current version: **0.6.0**
+Current version: **0.6.1**
 
 ## Version notes
 
@@ -13,3 +13,4 @@ Current version: **0.6.0**
 - `0.5.0` - GitHub Pages entrypoint added and repo prepared for public live hosting
 - `0.5.1` - Custom logo and favicon wiring added from the provided assets image
 - `0.6.0` - Saved comparisons sidebar added with restoreable comparison cards and persistent library state
+- `0.6.1` - Saved comparison cards upgraded with timestamps and delete controls

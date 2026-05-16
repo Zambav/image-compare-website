@@ -68,7 +68,7 @@ Image compare website/
 - recent files strip using localStorage filename history
 - flip horizontal, flip vertical, rotate, and reset transform controls
 - candidate queue on Image B with prev/next stepping against a fixed Image A reference
-- saved comparisons sidebar with manual save and click-to-restore cards
+- saved comparisons sidebar with manual save, timestamps, delete actions, and click-to-restore cards
 - custom favicon and header logo from the provided brand image in `assets/`
 
 ## Recommended Next Refactor

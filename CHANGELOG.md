@@ -20,6 +20,7 @@
 - GitHub Pages root entrypoint for live hosting from the current repo
 - Custom favicon and header logo from the provided asset image
 - Saved comparison cards sidebar with manual save and click-to-restore workflow
+- Saved comparison card timestamps and delete actions
 
 ### Changed
 - Promoted `image-compare v2.html` into a modular source version under `src/index.html`
@@ -35,3 +36,4 @@
 - Added a root `index.html` redirect so GitHub Pages can serve the app from the repo root cleanly
 - Generated favicon-sized PNG variants and connected them in both the root page and app page head tags
 - Added a right-side saved-comparisons library, save button, and persisted restore flow for returning to prior A/B states
+- Added delete controls and human-readable saved times so the comparison library is easier to manage over longer sessions
