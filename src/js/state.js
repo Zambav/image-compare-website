@@ -19,4 +19,5 @@ export const S = {
   rotation: 0,
   candidateQueue: [],
   currentCandidateIndex: 0,
+  savedComparisons: [],
 };

@@ -20,6 +20,8 @@
 - [ ] Verify multi-candidate stepping with real image batches and persisted restore
 - [ ] Verify prev/next behavior across both single-B replacement and multi-B batch workflows
 - [ ] Verify GitHub Pages deployment after publish
+- [ ] Verify saved-comparison restore flow with real user image sets
+- [ ] Decide whether queue mode stays, gets simplified, or gets replaced by saved-comparisons-first workflow
 - [ ] Add zoom to cursor, then synchronized zoom + pan
 - [ ] Add metadata panel with PNG chunk / EXIF parsing
 - [ ] Add diff map overlay mode

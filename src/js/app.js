@@ -5,6 +5,7 @@ import { setupDrop } from './loaders.js';
 import { restoreSession, scheduleSessionSave } from './session.js';
 import { getRecentFiles } from './recent.js';
 import { nextCandidate, prevCandidate, refreshQueueStatus } from './queue.js';
+import { renderSavedComparisons, saveCurrentComparison } from './comparisons.js';
 
 function setMode(mode) {
   document.querySelectorAll('.mpill').forEach((btn) => {
@@ -249,6 +250,12 @@ function bindQueueButtons() {
   dom.nextCandidateBtn.addEventListener('click', nextCandidate);
 }
 
+function bindSaveComparison() {
+  dom.saveComparisonBtn.addEventListener('click', async () => {
+    await saveCurrentComparison();
+  });
+}
+
 function bindRecentFilesEvents() {
   window.addEventListener('recents-updated', renderRecentFiles);
 }
@@ -263,12 +270,14 @@ async function init() {
   bindSwap();
   bindTransformButtons();
   bindQueueButtons();
+  bindSaveComparison();
   bindRecentFilesEvents();
   bindKeyboard();
   bindFullscreenTracking();
   await restoreSession();
   syncFullscreenClass();
   renderRecentFiles();
+  renderSavedComparisons();
   refreshQueueStatus();
 }
 

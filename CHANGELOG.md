@@ -19,6 +19,7 @@
 - Queue reliability fix so single B loads also create a navigable candidate queue
 - GitHub Pages root entrypoint for live hosting from the current repo
 - Custom favicon and header logo from the provided asset image
+- Saved comparison cards sidebar with manual save and click-to-restore workflow
 
 ### Changed
 - Promoted `image-compare v2.html` into a modular source version under `src/index.html`
@@ -33,3 +34,4 @@
 - Made single-image B replacement flows initialize the queue state too, so prev/next has a consistent source of truth
 - Added a root `index.html` redirect so GitHub Pages can serve the app from the repo root cleanly
 - Generated favicon-sized PNG variants and connected them in both the root page and app page head tags
+- Added a right-side saved-comparisons library, save button, and persisted restore flow for returning to prior A/B states

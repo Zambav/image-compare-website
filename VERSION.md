@@ -1,6 +1,6 @@
 # Version
 
-Current version: **0.5.1**
+Current version: **0.6.0**
 
 ## Version notes
 
@@ -12,3 +12,4 @@ Current version: **0.5.1**
 - `0.4.1` - Queue reliability fix so single B loads also initialize the candidate queue for prev/next navigation
 - `0.5.0` - GitHub Pages entrypoint added and repo prepared for public live hosting
 - `0.5.1` - Custom logo and favicon wiring added from the provided assets image
+- `0.6.0` - Saved comparisons sidebar added with restoreable comparison cards and persistent library state

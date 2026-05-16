@@ -260,6 +260,83 @@ header {
   color: var(--muted);
 }
 
+.workspace-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 18px;
+  align-items: start;
+}
+
+.saved-sidebar {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 420px;
+}
+.saved-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.saved-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acc);
+}
+.saved-sub,
+.saved-empty {
+  font-size: 12px;
+  color: var(--muted);
+}
+.saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.saved-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surf2);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.saved-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-1px);
+}
+.saved-preview {
+  aspect-ratio: 16 / 9;
+  background-size: cover;
+  background-position: center;
+  border-bottom: 1px solid var(--border);
+}
+.saved-meta {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.saved-name {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.saved-pair {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
 .stage-wrap {
   background: var(--surf);
   border-radius: 14px;
@@ -385,7 +462,8 @@ header {
 }
 
 body.is-fullscreen header,
-body.is-fullscreen .upload-row {
+body.is-fullscreen .upload-row,
+body.is-fullscreen .saved-sidebar {
   display: none;
 }
 
@@ -413,7 +491,12 @@ body.is-fullscreen .stage-wrap {
     padding-right: 20px;
   }
 
-  .upload-row {
+  .upload-row,
+  .workspace-layout {
     grid-template-columns: 1fr;
+  }
+
+  .saved-sidebar {
+    min-height: 0;
   }
 }

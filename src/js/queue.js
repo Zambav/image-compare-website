@@ -73,7 +73,7 @@ export async function replaceCandidateQueue(files) {
 
 export function setSingleCandidate(candidate) {
   if (!candidate?.src) return;
-  revokeQueueUrls(S.candidateQueue);
+  revokeQueueUrls(S.candidateQueue.filter((item) => item?.src !== candidate.src));
   S.candidateQueue = [candidate];
   S.currentCandidateIndex = 0;
   updateQueueStatus();

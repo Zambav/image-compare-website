@@ -4,6 +4,7 @@ import { applyAspectRatio, render, updateInfo } from './viewer.js';
 import { loadSession, saveSession } from './storage.js';
 import { loadDimensions } from './helpers.js';
 import { hydrateQueue, refreshQueueStatus } from './queue.js';
+import { hydrateSavedComparisons, renderSavedComparisons } from './comparisons.js';
 
 let persistTimer = null;
 let restoring = false;
@@ -74,6 +75,10 @@ async function restoreQueueRecords(items) {
   return queue;
 }
 
+function restoreSavedComparisonRecords(items) {
+  return (items || []).filter((item) => item?.imageA?.dataUrl && item?.imageB?.dataUrl);
+}
+
 function setThumb(element, url) {
   element.style.backgroundImage = `url("${url}")`;
   element.classList.add('on');
@@ -122,6 +127,7 @@ export function scheduleSessionSave() {
         rotation: S.rotation,
         currentCandidateIndex: S.currentCandidateIndex,
         candidateQueue,
+        savedComparisons: S.savedComparisons,
         imageA,
         imageB,
       });
@@ -151,6 +157,7 @@ export async function restoreSession() {
     const urlA = URL.createObjectURL(blobA);
     const urlB = URL.createObjectURL(blobB);
     const restoredQueue = await restoreQueueRecords(session.candidateQueue || []);
+    const restoredSavedComparisons = restoreSavedComparisonRecords(session.savedComparisons || []);
 
     const [dimA, dimB] = await Promise.all([
       loadDimensions(urlA),
@@ -182,6 +189,8 @@ export async function restoreSession() {
 
     applyUiState(session);
     hydrateQueue(restoredQueue, session.currentCandidateIndex || 0);
+    hydrateSavedComparisons(restoredSavedComparisons);
+    renderSavedComparisons();
     refreshQueueStatus();
     applyAspectRatio();
     updateInfo();
