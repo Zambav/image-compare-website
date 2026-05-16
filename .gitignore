@@ -1,0 +1,15 @@
+# Local scratch and runtime artifacts
+logs/*
+!logs/.gitkeep
+
+temp/*
+!temp/.gitkeep
+
+production/*
+!production/.gitkeep
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.tmp
+*.log

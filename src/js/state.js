@@ -1,0 +1,17 @@
+export const S = {
+  srcA: null,
+  srcB: null,
+  nameA: '',
+  nameB: '',
+  wA: 0,
+  hA: 0,
+  wB: 0,
+  hB: 0,
+  mode: 'slider',
+  pos: 0.5,
+  dissolve: 0.5,
+  toggleFrame: 'a',
+  dragging: false,
+  ready: false,
+  isFullscreen: false,
+};

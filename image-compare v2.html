@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Comparator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #0d0d0f;
+  --surf:    #17171b;
+  --surf2:   #202026;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.14);
+  --text:    #ededf0;
+  --muted:   #777;
+  --acc:     #c8f03c;
+  --acc-dim: rgba(200,240,60,0.12);
+  --acc2:    #60b8ff;
+  --r:       10px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header {
+  width: 100%;
+  max-width: 1200px;
+  padding: 28px 40px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--acc);
+}
+.logo-sub { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+
+.main {
+  width: 100%;
+  max-width: 1200px;
+  padding: 28px 40px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Dropzones ── */
+.upload-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.dropzone {
+  position: relative;
+  border: 1.5px dashed var(--border2);
+  border-radius: var(--r);
+  background: var(--surf);
+  min-height: 148px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.18s, background 0.18s;
+}
+.dropzone:hover, .dropzone.over {
+  border-color: var(--acc);
+  background: var(--acc-dim);
+}
+.dropzone input[type=file] {
+  position: absolute; inset: 0;
+  opacity: 0; cursor: pointer;
+  width: 100%; height: 100%;
+}
+.dz-thumb {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+  border-radius: var(--r);
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+.dz-thumb.on { opacity: 1; }
+.dz-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.52);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r);
+  opacity: 0;
+  transition: opacity 0.18s;
+  font-size: 11px;
+  color: #fff;
+  letter-spacing: 0.08em;
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.dropzone:hover .dz-overlay { opacity: 1; }
+.dz-inner {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.dz-icon {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--surf2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; color: var(--muted);
+  transition: background 0.18s, color 0.18s;
+}
+.dropzone:hover .dz-icon { background: var(--acc); color: #111; }
+.dz-label { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.55; }
+.dz-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acc);
+  background: var(--acc-dim);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(200,240,60,0.22);
+}
+
+/* ── Toolbar ── */
+.toolbar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.mode-pills {
+  display: flex;
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px; gap: 3px;
+}
+.mpill {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 15px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.14s, color 0.14s;
+  white-space: nowrap;
+}
+.mpill.on { background: var(--acc); color: #111; font-weight: 700; }
+.mpill:hover:not(.on) { background: var(--surf2); color: var(--text); }
+
+.d-wrap {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; color: var(--muted); letter-spacing: 0.05em;
+  transition: opacity 0.2s;
+}
+.d-wrap input[type=range] {
+  -webkit-appearance: none;
+  width: 130px; height: 4px;
+  border-radius: 2px;
+  background: var(--surf2);
+  outline: none; cursor: pointer;
+}
+.d-wrap input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--acc); cursor: pointer;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1.5px var(--acc);
+}
+.spacer { flex: 1; }
+.swap-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: var(--surf);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  display: flex; align-items: center; gap: 7px;
+}
+.swap-btn:hover { border-color: var(--border2); color: var(--text); }
+
+/* ── Stage ── */
+.stage-wrap {
+  background: var(--surf);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.empty-state {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 11px;
+  padding: 60px; text-align: center;
+}
+.es-icon { font-size: 36px; opacity: 0.2; margin-bottom: 4px; }
+.es-title { font-size: 14px; font-weight: 500; opacity: 0.4; }
+.es-sub { font-size: 13px; color: var(--muted); max-width: 260px; line-height: 1.65; opacity: 0.7; }
+
+/* Comparator — hidden until ready */
+#comp {
+  display: none;
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+#comp.ready { display: block; }
+
+#img-a, #img-b {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+
+/* Slider divider */
+#divider {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+#div-line {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: var(--acc);
+  transform: translateX(-50%);
+}
+#div-knob {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--acc);
+  display: flex; align-items: center; justify-content: center;
+  color: #111;
+  font-size: 13px; font-weight: 700;
+  box-shadow: 0 0 0 4px rgba(200,240,60,0.2);
+}
+
+/* Corner labels */
+.img-lbl {
+  position: absolute;
+  top: 13px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 11px;
+  border-radius: 999px;
+  z-index: 15;
+  pointer-events: none;
+  max-width: 200px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+#lbl-a { left: 13px; background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.12); color: #fff; }
+#lbl-b { right: 13px; background: rgba(200,240,60,0.9); color: #111; }
+
+#toggle-hint {
+  position: absolute;
+  bottom: 14px; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.13em;
+  text-transform: uppercase;
+  background: rgba(0,0,0,0.72);
+  color: var(--acc);
+  padding: 5px 15px;
+  border-radius: 999px;
+  z-index: 20;
+  pointer-events: none;
+  border: 1px solid rgba(200,240,60,0.18);
+  white-space: nowrap;
+}
+
+/* Info bar */
+.info-bar {
+  display: none;
+  align-items: center;
+  gap: 20px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.info-bar.on { display: flex; }
+.info-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 7px;
+  flex-shrink: 0;
+}
+.info-item { display: flex; align-items: center; }
+.kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  background: var(--surf2);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  font-size: 9px; letter-spacing: 0.1em;
+  color: var(--muted);
+  margin: 0 4px 0 10px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">Comparator</span>
+  <span class="logo-sub">/ image diff tool</span>
+</header>
+
+<div class="main">
+
+  <div class="upload-row">
+    <div class="dropzone" id="dz-a">
+      <input type="file" accept="image/*" id="file-a">
+      <div class="dz-thumb" id="thumb-a"></div>
+      <div class="dz-overlay">↑ replace image</div>
+      <div class="dz-inner" id="dz-a-inner">
+        <div class="dz-icon">↑</div>
+        <div class="dz-label">Drop Image A here<br>or click to browse</div>
+        <span class="dz-tag">Before</span>
+      </div>
+    </div>
+    <div class="dropzone" id="dz-b">
+      <input type="file" accept="image/*" id="file-b">
+      <div class="dz-thumb" id="thumb-b"></div>
+      <div class="dz-overlay">↑ replace image</div>
+      <div class="dz-inner" id="dz-b-inner">
+        <div class="dz-icon">↑</div>
+        <div class="dz-label">Drop Image B here<br>or click to browse</div>
+        <span class="dz-tag">After</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="mode-pills">
+      <button class="mpill on" data-mode="slider">⇔ Slider</button>
+      <button class="mpill" data-mode="dissolve">~ Dissolve</button>
+      <button class="mpill" data-mode="toggle">⊙ Toggle</button>
+    </div>
+
+    <div class="d-wrap" id="d-wrap" style="opacity:0.3;pointer-events:none;">
+      <span>A</span>
+      <input type="range" id="d-range" min="0" max="1" step="0.01" value="0.5">
+      <span>B</span>
+      <span id="d-pct" style="min-width:34px;text-align:right;">50%</span>
+    </div>
+
+    <div class="spacer"></div>
+    <button class="swap-btn" id="swap-btn">⇄ Swap A / B</button>
+  </div>
+
+  <div class="stage-wrap" id="stage-wrap">
+    <div class="empty-state" id="empty-state">
+      <div class="es-icon">◧</div>
+      <div class="es-title">No images loaded yet</div>
+      <div class="es-sub">Upload two images above — the viewer activates automatically once both are loaded.</div>
+    </div>
+
+    <div id="comp">
+      <img id="img-a" draggable="false" alt="Image A">
+      <img id="img-b" draggable="false" alt="Image B">
+
+      <div id="divider">
+        <div id="div-line"></div>
+        <div id="div-knob">◀▶</div>
+      </div>
+
+      <div class="img-lbl" id="lbl-a">A</div>
+      <div class="img-lbl" id="lbl-b">B</div>
+      <div id="toggle-hint">click to toggle</div>
+    </div>
+  </div>
+
+  <div class="info-bar" id="info-bar">
+    <div class="info-item">
+      <span class="info-dot" style="background:var(--acc)"></span>
+      <span id="info-a">—</span>
+    </div>
+    <div class="info-item">
+      <span class="info-dot" style="background:var(--acc2)"></span>
+      <span id="info-b">—</span>
+    </div>
+    <div style="flex:1"></div>
+    <div style="color:var(--muted);opacity:0.55;display:flex;align-items:center;">
+      <span class="kbd">S</span>slider
+      <span class="kbd">D</span>dissolve
+      <span class="kbd">T</span>toggle
+      <span class="kbd">Space</span>swap
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ── State ─────────────────────────────────── */
+const S = {
+  srcA: null, srcB: null,
+  nameA: '', nameB: '',
+  wA: 0, hA: 0, wB: 0, hB: 0,
+  mode: 'slider',
+  pos: 0.5,
+  dissolve: 0.5,
+  toggleFrame: 'a',
+  dragging: false,
+  ready: false,
+};
+
+/* ── DOM refs ───────────────────────────────── */
+const $ = id => document.getElementById(id);
+const comp       = $('comp');
+const imgA       = $('img-a');
+const imgB       = $('img-b');
+const divider    = $('divider');
+const lblA       = $('lbl-a');
+const lblB       = $('lbl-b');
+const tHint      = $('toggle-hint');
+const stageWrap  = $('stage-wrap');
+const emptyState = $('empty-state');
+const infoBar    = $('info-bar');
+const infoA      = $('info-a');
+const infoB      = $('info-b');
+const dWrap      = $('d-wrap');
+const dRange     = $('d-range');
+const dPct       = $('d-pct');
+const thumbA     = $('thumb-a');
+const thumbB     = $('thumb-b');
+const dzAInner   = $('dz-a-inner');
+const dzBInner   = $('dz-b-inner');
+
+/* ── Single render function ─────────────────
+   This is the ONLY place any element's
+   visibility or style is ever modified.
+   Everything else just mutates S{} and calls render().
+─────────────────────────────────────────── */
+function render() {
+  if (!S.ready) return;
+
+  const pct = (S.pos * 100).toFixed(3) + '%';
+
+  /* img-a: always full, never hidden */
+  imgA.style.opacity  = '1';
+  imgA.style.clipPath = 'none';
+
+  if (S.mode === 'slider') {
+    /* B clips: hide left portion (0→pos), reveal right (pos→1) */
+    imgB.style.opacity  = '1';
+    imgB.style.clipPath = `inset(0 0 0 ${pct})`;
+
+    divider.style.display = 'block';
+    divider.style.left    = pct;
+
+    lblA.style.display = 'block';
+    lblB.style.display = 'block';
+    lblA.textContent   = stripExt(S.nameA);
+    lblB.textContent   = stripExt(S.nameB);
+    tHint.style.display = 'none';
+
+    stageWrap.style.cursor = 'col-resize';
+
+  } else if (S.mode === 'dissolve') {
+    imgB.style.opacity  = String(S.dissolve);
+    imgB.style.clipPath = 'none';
+
+    divider.style.display  = 'none';
+    lblA.style.display     = 'none';
+    lblB.style.display     = 'none';
+    tHint.style.display    = 'none';
+
+    stageWrap.style.cursor = 'default';
+
+  } else { /* toggle */
+    imgB.style.clipPath = 'none';
+    divider.style.display = 'none';
+    lblB.style.display    = 'none';
+    tHint.style.display   = 'block';
+    stageWrap.style.cursor = 'pointer';
+
+    if (S.toggleFrame === 'a') {
+      imgB.style.opacity = '0';
+      lblA.style.display = 'block';
+      lblA.textContent   = stripExt(S.nameA) + ' (A)';
+    } else {
+      imgB.style.opacity = '1';
+      lblA.style.display = 'block';
+      lblA.textContent   = stripExt(S.nameB) + ' (B)';
+    }
+  }
+
+  /* dissolve control */
+  const isD = S.mode === 'dissolve';
+  dWrap.style.opacity       = isD ? '1' : '0.3';
+  dWrap.style.pointerEvents = isD ? 'auto' : 'none';
+}
+
+/* ── Helpers ────────────────────────────────── */
+function stripExt(n) { return n ? n.replace(/\.[^.]+$/, '') : ''; }
+
+function loadDimensions(src) {
+  return new Promise((res, rej) => {
+    const i = new Image();
+    i.onload  = () => res({ w: i.naturalWidth, h: i.naturalHeight });
+    i.onerror = rej;
+    i.src = src;
+  });
+}
+
+function applyAspectRatio() {
+  /* Stage adopts image A's aspect ratio */
+  stageWrap.style.aspectRatio = `${S.wA} / ${S.hA}`;
+  stageWrap.style.maxHeight   = '80vh';
+  stageWrap.style.minHeight   = '';
+}
+
+function updateInfo() {
+  infoA.textContent = `A: ${S.nameA}  ${S.wA}×${S.hA}`;
+  infoB.textContent = `B: ${S.nameB}  ${S.wB}×${S.hB}`;
+}
+
+/* ── Image loading ─────────────────────────── */
+async function loadFile(file, slot) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const url = URL.createObjectURL(file);
+
+  let dim;
+  try { dim = await loadDimensions(url); }
+  catch { URL.revokeObjectURL(url); return; }
+
+  if (slot === 'a') {
+    if (S.srcA) URL.revokeObjectURL(S.srcA);
+    S.srcA = url; S.nameA = file.name; S.wA = dim.w; S.hA = dim.h;
+    thumbA.style.backgroundImage = `url('${CSS.escape ? url : url}')`;
+    thumbA.classList.add('on');
+    dzAInner.style.opacity = '0';
+  } else {
+    if (S.srcB) URL.revokeObjectURL(S.srcB);
+    S.srcB = url; S.nameB = file.name; S.wB = dim.w; S.hB = dim.h;
+    thumbB.style.backgroundImage = `url('${url}')`;
+    thumbB.classList.add('on');
+    dzBInner.style.opacity = '0';
+  }
+
+  if (S.srcA && S.srcB) {
+    imgA.src = S.srcA;
+    imgB.src = S.srcB;
+
+    if (!S.ready) {
+      S.ready = true;
+      emptyState.style.display = 'none';
+      comp.classList.add('ready');
+      infoBar.classList.add('on');
+    }
+
+    applyAspectRatio();
+    updateInfo();
+    render();
+  }
+}
+
+function setupDrop(dzId, fileId, slot) {
+  const dz  = $(dzId);
+  const inp = $(fileId);
+  dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('over'); });
+  dz.addEventListener('dragleave', ()  => dz.classList.remove('over'));
+  dz.addEventListener('drop',      e  => {
+    e.preventDefault(); dz.classList.remove('over');
+    if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0], slot);
+  });
+  inp.addEventListener('change', () => {
+    if (inp.files[0]) loadFile(inp.files[0], slot);
+    inp.value = '';
+  });
+}
+
+setupDrop('dz-a', 'file-a', 'a');
+setupDrop('dz-b', 'file-b', 'b');
+
+/* ── Mode buttons ──────────────────────────── */
+document.querySelectorAll('.mpill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mpill').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    S.mode = btn.dataset.mode;
+    if (S.mode === 'toggle') S.toggleFrame = 'a';
+    render();
+  });
+});
+
+/* ── Slider drag ───────────────────────────── */
+function getRelX(e) {
+  const rect = stageWrap.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  return Math.max(0.01, Math.min(0.99, (clientX - rect.left) / rect.width));
+}
+
+stageWrap.addEventListener('mousedown', e => {
+  if (!S.ready || S.mode !== 'slider') return;
+  S.dragging = true;
+  S.pos = getRelX(e);
+  render();
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', e => {
+  if (!S.dragging) return;
+  S.pos = getRelX(e);
+  render();
+});
+
+document.addEventListener('mouseup', () => { S.dragging = false; });
+
+stageWrap.addEventListener('touchstart', e => {
+  if (!S.ready || S.mode !== 'slider') return;
+  S.dragging = true;
+  S.pos = getRelX(e);
+  render();
+}, { passive: true });
+
+document.addEventListener('touchmove', e => {
+  if (!S.dragging) return;
+  S.pos = getRelX(e);
+  render();
+}, { passive: true });
+
+document.addEventListener('touchend', () => { S.dragging = false; });
+
+/* ── Toggle click ──────────────────────────── */
+stageWrap.addEventListener('click', e => {
+  if (!S.ready || S.mode !== 'toggle' || S.dragging) return;
+  S.toggleFrame = S.toggleFrame === 'a' ? 'b' : 'a';
+  render();
+});
+
+/* ── Dissolve range ────────────────────────── */
+dRange.addEventListener('input', () => {
+  S.dissolve = parseFloat(dRange.value);
+  dPct.textContent = Math.round(S.dissolve * 100) + '%';
+  if (S.mode === 'dissolve') render();
+});
+
+/* ── Swap ──────────────────────────────────── */
+$('swap-btn').addEventListener('click', () => {
+  if (!S.srcA || !S.srcB) return;
+
+  [S.srcA,  S.srcB]  = [S.srcB,  S.srcA];
+  [S.nameA, S.nameB] = [S.nameB, S.nameA];
+  [S.wA,    S.wB]    = [S.wB,    S.wA];
+  [S.hA,    S.hB]    = [S.hB,    S.hA];
+
+  const bgA = thumbA.style.backgroundImage;
+  thumbA.style.backgroundImage = thumbB.style.backgroundImage;
+  thumbB.style.backgroundImage = bgA;
+
+  imgA.src = S.srcA;
+  imgB.src = S.srcB;
+
+  applyAspectRatio();
+  updateInfo();
+  if (S.mode === 'toggle') S.toggleFrame = 'a';
+  render();
+});
+
+/* ── Keyboard ──────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (!S.ready) return;
+  if (e.target.tagName === 'INPUT' && e.target.type !== 'range') return;
+  const k = e.key.toLowerCase();
+
+  if (k === 's') {
+    document.querySelector('[data-mode=slider]').click();
+  } else if (k === 'd') {
+    document.querySelector('[data-mode=dissolve]').click();
+  } else if (k === 't') {
+    if (S.mode === 'toggle') {
+      S.toggleFrame = S.toggleFrame === 'a' ? 'b' : 'a';
+      render();
+    } else {
+      document.querySelector('[data-mode=toggle]').click();
+    }
+  } else if (e.key === ' ') {
+    e.preventDefault();
+    $('swap-btn').click();
+  }
+});
+</script>
+</body>
+</html>

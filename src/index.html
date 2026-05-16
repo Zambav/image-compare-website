@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Comparator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+
+<header>
+  <span class="logo">Comparator</span>
+  <span class="logo-sub">/ image diff tool</span>
+</header>
+
+<div class="main">
+
+  <div class="upload-row">
+    <div class="dropzone" id="dz-a">
+      <input type="file" accept="image/*" id="file-a">
+      <div class="dz-thumb" id="thumb-a"></div>
+      <div class="dz-overlay">↑ replace image</div>
+      <div class="dz-inner" id="dz-a-inner">
+        <div class="dz-icon">↑</div>
+        <div class="dz-label">Drop Image A here<br>or click to browse</div>
+        <span class="dz-tag">Before</span>
+      </div>
+    </div>
+    <div class="dropzone" id="dz-b">
+      <input type="file" accept="image/*" id="file-b">
+      <div class="dz-thumb" id="thumb-b"></div>
+      <div class="dz-overlay">↑ replace image</div>
+      <div class="dz-inner" id="dz-b-inner">
+        <div class="dz-icon">↑</div>
+        <div class="dz-label">Drop Image B here<br>or click to browse</div>
+        <span class="dz-tag">After</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="mode-pills">
+      <button class="mpill on" data-mode="slider">⇔ Slider</button>
+      <button class="mpill" data-mode="dissolve">~ Dissolve</button>
+      <button class="mpill" data-mode="toggle">⊙ Toggle</button>
+    </div>
+
+    <div class="d-wrap" id="d-wrap" style="opacity:0.3;pointer-events:none;">
+      <span>A</span>
+      <input type="range" id="d-range" min="0" max="1" step="0.01" value="0.5">
+      <span>B</span>
+      <span id="d-pct" style="min-width:34px;text-align:right;">50%</span>
+    </div>
+
+    <div class="spacer"></div>
+    <button class="swap-btn" id="swap-btn">⇄ Swap A / B</button>
+  </div>
+
+  <div class="stage-wrap" id="stage-wrap">
+    <div class="empty-state" id="empty-state">
+      <div class="es-icon">◧</div>
+      <div class="es-title">No images loaded yet</div>
+      <div class="es-sub">Upload two images above, the viewer activates automatically once both are loaded.</div>
+    </div>
+
+    <div id="comp">
+      <img id="img-a" draggable="false" alt="Image A">
+      <img id="img-b" draggable="false" alt="Image B">
+
+      <div id="divider">
+        <div id="div-line"></div>
+        <div id="div-knob">◀▶</div>
+      </div>
+
+      <div class="img-lbl" id="lbl-a">A</div>
+      <div class="img-lbl" id="lbl-b">B</div>
+      <div id="toggle-hint">click to toggle</div>
+    </div>
+  </div>
+
+  <div class="info-bar" id="info-bar">
+    <div class="info-item">
+      <span class="info-dot" style="background:var(--acc)"></span>
+      <span id="info-a">—</span>
+    </div>
+    <div class="info-item">
+      <span class="info-dot" style="background:var(--acc2)"></span>
+      <span id="info-b">—</span>
+    </div>
+    <div style="flex:1"></div>
+    <div style="color:var(--muted);opacity:0.55;display:flex;align-items:center;flex-wrap:wrap;gap:2px;">
+      <span class="kbd">S</span>slider
+      <span class="kbd">D</span>dissolve
+      <span class="kbd">T</span>toggle
+      <span class="kbd">← →</span>nudge
+      <span class="kbd">F</span>fullscreen
+      <span class="kbd">Space</span>swap
+    </div>
+  </div>
+
+</div>
+
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>

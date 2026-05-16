@@ -1,0 +1,27 @@
+export const $ = (id) => document.getElementById(id);
+
+export const dom = {
+  comp: $('comp'),
+  imgA: $('img-a'),
+  imgB: $('img-b'),
+  divider: $('divider'),
+  lblA: $('lbl-a'),
+  lblB: $('lbl-b'),
+  tHint: $('toggle-hint'),
+  stageWrap: $('stage-wrap'),
+  emptyState: $('empty-state'),
+  infoBar: $('info-bar'),
+  infoA: $('info-a'),
+  infoB: $('info-b'),
+  dWrap: $('d-wrap'),
+  dRange: $('d-range'),
+  dPct: $('d-pct'),
+  thumbA: $('thumb-a'),
+  thumbB: $('thumb-b'),
+  dzAInner: $('dz-a-inner'),
+  dzBInner: $('dz-b-inner'),
+  swapBtn: $('swap-btn'),
+  fileA: $('file-a'),
+  fileB: $('file-b'),
+  body: document.body,
+};
