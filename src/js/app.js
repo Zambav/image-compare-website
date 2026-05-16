@@ -388,60 +388,28 @@ function bindRecentFilesEvents() {
 }
 
 async function resetAll() {
-  if (!window.confirm('Reset everything and clear all saved comparisons?')) return;
-  S.savedComparisons = [];
-  S.srcA = null;
-  S.srcB = null;
-  S.nameA = '';
-  S.nameB = '';
-  S.wA = 0;
-  S.hA = 0;
-  S.wB = 0;
-  S.hB = 0;
-  S.mode = 'slider';
-  S.pos = 0.5;
-  S.dissolve = 0.5;
-  S.toggleFrame = 'a';
-  S.flipH = false;
-  S.flipV = false;
-  S.rotation = 0;
-  S.zoom = 1;
-  S.panX = 0;
-  S.panY = 0;
-  S.ready = false;
-  S.candidateQueue = [];
-  S.currentCandidateIndex = 0;
-  S.metaA = null;
-  S.metaB = null;
+  if (!window.confirm('Reset everything and wipe all local site data?')) return;
 
-  dom.imgA.src = '';
-  dom.imgB.src = '';
-  dom.thumbA.style.backgroundImage = '';
-  dom.thumbB.style.backgroundImage = '';
-  dom.thumbA.classList.remove('on');
-  dom.thumbB.classList.remove('on');
-  dom.dzAInner.style.opacity = '1';
-  dom.dzBInner.style.opacity = '1';
-  dom.emptyState.style.display = '';
-  dom.comp.classList.remove('ready');
-  dom.infoBar.classList.remove('on');
-  dom.dRange.value = '0.5';
-  dom.dPct.textContent = '50%';
-  document.querySelectorAll('.mpill').forEach((btn) => {
-    btn.classList.toggle('on', btn.dataset.mode === 'slider');
-  });
-  dom.infoA.textContent = '—';
-  dom.infoB.textContent = '—';
-
-  renderSavedComparisons();
-  renderMetadataPanel();
-  refreshQueueStatus();
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+  } catch (e) {
+    console.warn('storage clear failed', e);
+  }
 
   try {
     await clearSession();
   } catch (e) {
     console.warn('clearSession failed', e);
   }
+
+  try {
+    indexedDB.deleteDatabase('image-compare-db');
+  } catch (e) {
+    console.warn('deleteDatabase failed', e);
+  }
+
+  window.location.reload();
 }
 
 function bindResetButton() {

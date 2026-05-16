@@ -5,6 +5,36 @@ import { scheduleSessionSave } from './session.js';
 import { setSingleCandidate } from './queue.js';
 import { renderMetadataPanel } from './metadata.js';
 
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+function drawTransformed(ctx, img, width, height, opacity = 1, clipLeftRatio = null) {
+  const iw = img.naturalWidth;
+  const ih = img.naturalHeight;
+  const fit = Math.min(width / iw, height / ih);
+  const drawW = iw * fit;
+  const drawH = ih * fit;
+
+  ctx.save();
+  if (clipLeftRatio !== null) {
+    ctx.beginPath();
+    ctx.rect(width * clipLeftRatio, 0, width * (1 - clipLeftRatio), height);
+    ctx.clip();
+  }
+  ctx.translate(width / 2 + S.panX, height / 2 + S.panY);
+  ctx.rotate((S.rotation * Math.PI) / 180);
+  ctx.scale((S.flipH ? -1 : 1) * S.zoom, (S.flipV ? -1 : 1) * S.zoom);
+  ctx.globalAlpha = opacity;
+  ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+  ctx.restore();
+}
+
 const MAX_SAVED = 12;
 
 function shortName(name) {
@@ -68,7 +98,12 @@ async function buildImageRecord(src, name, w, h) {
 }
 
 export function hydrateSavedComparisons(items = []) {
-  S.savedComparisons = Array.isArray(items) ? items : [];
+  S.savedComparisons = Array.isArray(items)
+    ? items.map((item) => ({
+        ...item,
+        preview: item?.preview || item?.imageB?.dataUrl || '',
+      }))
+    : [];
 }
 
 export function renderSavedComparisons() {
@@ -80,7 +115,7 @@ export function renderSavedComparisons() {
   dom.savedList.innerHTML = S.savedComparisons.map((item) => `
     <article class="saved-card" data-compare-id="${item.id}">
       <button class="saved-card-main" data-compare-open="${item.id}" type="button">
-        <div class="saved-preview" style="background-image:url('${item.preview}')"></div>
+        <img class="saved-preview" src="${item.preview}" alt="Saved comparison preview">
       </button>
       <button class="saved-delete" data-compare-delete="${item.id}" type="button" aria-label="Delete saved comparison">×</button>
     </article>
@@ -98,19 +133,45 @@ export function renderSavedComparisons() {
   });
 }
 
+async function buildComparisonPreview() {
+  const [imgA, imgB] = await Promise.all([loadImage(S.srcA), loadImage(S.srcB)]);
+  const size = 320;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#17171b';
+  ctx.fillRect(0, 0, size, size);
+  drawTransformed(ctx, imgA, size, size, 1, null);
+
+  if (S.mode === 'slider') {
+    drawTransformed(ctx, imgB, size, size, 1, S.pos);
+    ctx.fillStyle = '#c8f03c';
+    ctx.fillRect(size * S.pos - 1, 0, 2, size);
+  } else if (S.mode === 'dissolve') {
+    drawTransformed(ctx, imgB, size, size, S.dissolve, null);
+  } else {
+    drawTransformed(ctx, imgB, size, size, S.toggleFrame === 'b' ? 1 : 0, null);
+  }
+
+  return canvas.toDataURL('image/png');
+}
+
 export async function saveCurrentComparison() {
   if (!S.ready || !S.srcA || !S.srcB) return;
 
-  const [imageA, imageB] = await Promise.all([
+  const [imageA, imageB, preview] = await Promise.all([
     buildImageRecord(S.srcA, S.nameA, S.wA, S.hA),
     buildImageRecord(S.srcB, S.nameB, S.wB, S.hB),
+    buildComparisonPreview(),
   ]);
 
   const item = {
     id: `cmp-${Date.now()}`,
     savedAt: Date.now(),
     label: `${shortName(S.nameA)} vs ${shortName(S.nameB)}`,
-    preview: imageB.dataUrl,
+    preview,
     nameA: S.nameA,
     nameB: S.nameB,
     imageA,
