@@ -42,9 +42,28 @@ function blobToDataUrl(blob) {
 }
 
 async function buildImageRecord(src, name, w, h) {
-  const response = await fetch(src);
-  const blob = await response.blob();
-  const dataUrl = await blobToDataUrl(blob);
+  // Try fetch first (for http URLs), fall back to canvas copy for blob/file URLs
+  let dataUrl;
+  try {
+    const response = await fetch(src);
+    const blob = await response.blob();
+    dataUrl = await blobToDataUrl(blob);
+  } catch {
+    // Fallback: draw the current img element to a canvas and extract dataURL
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = src;
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth || w;
+    canvas.height = img.naturalHeight || h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    dataUrl = canvas.toDataURL('image/png');
+  }
   return { name, dataUrl, w, h };
 }
 
