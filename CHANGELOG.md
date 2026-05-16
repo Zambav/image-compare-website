@@ -16,6 +16,7 @@
 - Recent files list backed by localStorage filename history
 - Flip horizontal, flip vertical, rotate, and reset transform controls
 - Candidate queue controls for stepping through multiple B images against a fixed A reference
+- Queue reliability fix so single B loads also create a navigable candidate queue
 
 ### Changed
 - Promoted `image-compare v2.html` into a modular source version under `src/index.html`
@@ -27,3 +28,4 @@
 - Expanded the toolbar and added a recent-files strip below the controls
 - Added queue status, prev/next controls, and persisted candidate queue state in session storage
 - Updated B upload handling to accept multi-file candidate batches
+- Made single-image B replacement flows initialize the queue state too, so prev/next has a consistent source of truth

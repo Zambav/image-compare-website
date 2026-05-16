@@ -4,7 +4,7 @@ import { loadDimensions } from './helpers.js';
 import { applyAspectRatio, render, updateInfo } from './viewer.js';
 import { scheduleSessionSave } from './session.js';
 import { addRecentFile } from './recent.js';
-import { replaceCandidateQueue } from './queue.js';
+import { replaceCandidateQueue, setSingleCandidate } from './queue.js';
 
 export async function loadFile(file, slot) {
   if (!file || !file.type.startsWith('image/')) return;
@@ -32,7 +32,12 @@ export async function loadFile(file, slot) {
     dom.thumbA.classList.add('on');
     dom.dzAInner.style.opacity = '0';
   } else {
-    if (S.srcB) URL.revokeObjectURL(S.srcB);
+    setSingleCandidate({
+      src: url,
+      name: file.name,
+      w: dim.w,
+      h: dim.h,
+    });
     S.srcB = url;
     S.nameB = file.name;
     S.wB = dim.w;

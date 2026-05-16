@@ -4,6 +4,14 @@ import { loadDimensions } from './helpers.js';
 import { applyAspectRatio, render, updateInfo } from './viewer.js';
 import { scheduleSessionSave } from './session.js';
 
+function revokeQueueUrls(items = []) {
+  for (const item of items) {
+    if (item?.src && item.src.startsWith('blob:')) {
+      try { URL.revokeObjectURL(item.src); } catch {}
+    }
+  }
+}
+
 function updateQueueStatus() {
   const total = Math.max(1, S.candidateQueue.length || (S.srcB ? 1 : 0));
   const current = Math.min(total, (S.currentCandidateIndex || 0) + 1);
@@ -56,10 +64,19 @@ export async function replaceCandidateQueue(files) {
     });
   }
 
+  revokeQueueUrls(S.candidateQueue);
   S.candidateQueue = queue;
   S.currentCandidateIndex = 0;
   syncCurrentCandidate();
   scheduleSessionSave();
+}
+
+export function setSingleCandidate(candidate) {
+  if (!candidate?.src) return;
+  revokeQueueUrls(S.candidateQueue);
+  S.candidateQueue = [candidate];
+  S.currentCandidateIndex = 0;
+  updateQueueStatus();
 }
 
 export function nextCandidate() {

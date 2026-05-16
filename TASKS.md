@@ -18,6 +18,7 @@
 - [ ] Verify transform behavior with portrait and landscape images
 - [x] Add multiple image slots / queue against a fixed reference image
 - [ ] Verify multi-candidate stepping with real image batches and persisted restore
+- [ ] Verify prev/next behavior across both single-B replacement and multi-B batch workflows
 - [ ] Add zoom to cursor, then synchronized zoom + pan
 - [ ] Add metadata panel with PNG chunk / EXIF parsing
 - [ ] Add diff map overlay mode
