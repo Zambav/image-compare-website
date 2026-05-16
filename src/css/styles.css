@@ -338,10 +338,9 @@ header {
   border-color: rgba(239,68,68,0.9);
 }
 .saved-preview {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1 / 1;
   background-size: cover;
   background-position: center;
-  border-bottom: 1px solid var(--border);
 }
 .saved-meta {
   padding: 10px;
