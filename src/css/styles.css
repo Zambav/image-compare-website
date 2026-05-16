@@ -36,6 +36,13 @@ header {
   align-items: center;
   gap: 12px;
 }
+.logo-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+}
 .logo {
   font-family: 'Space Mono', monospace;
   font-size: 12px;

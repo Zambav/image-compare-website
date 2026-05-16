@@ -1,6 +1,6 @@
 # Version
 
-Current version: **0.5.0**
+Current version: **0.5.1**
 
 ## Version notes
 
@@ -11,3 +11,4 @@ Current version: **0.5.0**
 - `0.4.0` - Candidate queue mode added for multiple B images with stepping controls and persisted queue state
 - `0.4.1` - Queue reliability fix so single B loads also initialize the candidate queue for prev/next navigation
 - `0.5.0` - GitHub Pages entrypoint added and repo prepared for public live hosting
+- `0.5.1` - Custom logo and favicon wiring added from the provided assets image
