@@ -10,6 +10,7 @@ import {
   addSavedComparisons,
   buildBatchSavedComparisons,
   exportSavedComparisonsToJsonFile,
+  getBatchPairValidation,
   importSavedComparisonsFromJsonFile,
   renderSavedComparisons,
   restoreSavedComparison,
@@ -17,6 +18,7 @@ import {
 } from './comparisons.js';
 import { exportCurrentComparison } from './export.js';
 import { renderMetadataPanel } from './metadata.js';
+import { BATCH_MIN_PAIRS } from './config.js';
 
 function setMode(mode) {
   document.querySelectorAll('.mpill').forEach((btn) => {
@@ -412,7 +414,7 @@ function bindSavedComparisonsJsonActions() {
         window.alert(`Imported ${importedCount} comparison${importedCount === 1 ? '' : 's'}.`);
       }
     } catch (error) {
-      console.warn('Import comparisons failed', error);
+      console.warn('Import comparisons failed:', error?.message || error);
       window.alert('Could not import comparisons from that JSON file.');
     } finally {
       dom.importComparesInput.value = '';
@@ -430,22 +432,20 @@ function bindBatchScreen() {
   };
 
   const updateBatchStatus = () => {
-    const countA = filesA.length;
-    const countB = filesB.length;
-    const countsMatch = countA === countB && countA >= 5;
-    const minimumReady = countA >= 5 && countB >= 5;
+    const validation = getBatchPairValidation(filesA, filesB);
+    const { countA, countB, minimumReady, countsMatch, ok } = validation;
 
     if (!countA && !countB) {
       dom.batchStatus.textContent = 'Select both sets to begin.';
     } else if (!minimumReady) {
-      dom.batchStatus.textContent = `Need at least 5 images per side (A: ${countA}, B: ${countB}).`;
+      dom.batchStatus.textContent = `Need at least ${BATCH_MIN_PAIRS} images per side (A: ${countA}, B: ${countB}).`;
     } else if (!countsMatch) {
       dom.batchStatus.textContent = `Counts must match for pairing (A: ${countA}, B: ${countB}).`;
     } else {
-      dom.batchStatus.textContent = `Ready to build ${countA} pair${countA === 1 ? '' : 's'}.`;
+      dom.batchStatus.textContent = validation.message;
     }
 
-    dom.batchBuildBtn.disabled = !countsMatch;
+    dom.batchBuildBtn.disabled = !ok;
   };
 
   const openBatch = () => {
@@ -479,11 +479,11 @@ function bindBatchScreen() {
     try {
       const built = await buildBatchSavedComparisons(filesA, filesB);
       const added = addSavedComparisons(built);
-      if (added) restoreSavedComparison(built[0].id);
+      if (added && built.length) restoreSavedComparison(built[0].id);
       closeBatch();
       window.alert(`Created ${added} batch comparison${added === 1 ? '' : 's'}.`);
     } catch (error) {
-      console.warn('Batch build failed', error);
+      console.warn('Batch build failed:', error?.message || error);
       window.alert(error?.message || 'Could not build batch comparisons.');
     }
   });

@@ -12,6 +12,7 @@
   --acc-dim: rgba(200,240,60,0.12);
   --acc2:    #60b8ff;
   --r:       10px;
+  --saved-list-max-height: 420px;
 }
 
 body {
@@ -341,7 +342,7 @@ header {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 420px;
+  max-height: var(--saved-list-max-height);
   overflow: auto;
 }
 .saved-card {
@@ -362,6 +363,10 @@ header {
   padding: 0;
   width: 100%;
   cursor: pointer;
+}
+.saved-card-main:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: -2px;
 }
 .saved-delete {
   position: absolute;

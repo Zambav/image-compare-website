@@ -5,6 +5,7 @@ import { scheduleSessionSave } from './session.js';
 import { setSingleCandidate } from './queue.js';
 import { extractMetadata, renderMetadataPanel } from './metadata.js';
 import { loadDimensions } from './helpers.js';
+import { BATCH_MIN_PAIRS, MAX_SAVED_COMPARISONS } from './config.js';
 
 function loadImage(src) {
   return new Promise((resolve, reject) => {
@@ -35,8 +36,6 @@ function drawTransformed(ctx, img, width, height, opacity = 1, clipLeftRatio = n
   ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
   ctx.restore();
 }
-
-const MAX_SAVED = 60;
 
 function shortName(name) {
   return (name || 'Untitled').replace(/\.[^.]+$/, '');
@@ -87,7 +86,7 @@ function isDataImageUrl(value) {
 
 function normalizeSavedItem(item) {
   if (!item || typeof item !== 'object') return null;
-  if (!isDataImageUrl(item?.imageA?.dataUrl) || !isDataImageUrl(item?.imageB?.dataUrl)) return null;
+  if (!isDataImageUrl(item.imageA?.dataUrl) || !isDataImageUrl(item.imageB?.dataUrl)) return null;
 
   return {
     id: item.id || `cmp-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
@@ -249,7 +248,7 @@ export async function saveCurrentComparison() {
   };
 
   S.savedComparisons.unshift(item);
-  S.savedComparisons = S.savedComparisons.slice(0, MAX_SAVED);
+  S.savedComparisons = S.savedComparisons.slice(0, MAX_SAVED_COMPARISONS);
   renderSavedComparisons();
   scheduleSessionSave();
 }
@@ -259,8 +258,8 @@ export function addSavedComparisons(items = [], { replace = false } = {}) {
   if (!normalized.length) return 0;
 
   S.savedComparisons = replace
-    ? normalized.slice(0, MAX_SAVED)
-    : [...normalized, ...S.savedComparisons].slice(0, MAX_SAVED);
+    ? normalized.slice(0, MAX_SAVED_COMPARISONS)
+    : [...normalized, ...S.savedComparisons].slice(0, MAX_SAVED_COMPARISONS);
 
   renderSavedComparisons();
   scheduleSessionSave();
@@ -281,7 +280,7 @@ export function exportSavedComparisonsToJsonFile() {
   link.href = url;
   link.download = `saved-compares-${stamp}.json`;
   link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 0);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
 }
 
 export async function importSavedComparisonsFromJsonFile(file, { replace = false } = {}) {
@@ -317,14 +316,9 @@ async function fileToImageRecord(file) {
 export async function buildBatchSavedComparisons(filesA = [], filesB = []) {
   const listA = Array.from(filesA || []).filter((file) => file?.type?.startsWith('image/'));
   const listB = Array.from(filesB || []).filter((file) => file?.type?.startsWith('image/'));
+  const validation = getBatchPairValidation(listA, listB);
 
-  if (listA.length < 5 || listB.length < 5) {
-    throw new Error('Batch mode requires at least 5 images in each set.');
-  }
-
-  if (listA.length !== listB.length) {
-    throw new Error('Image A and Image B sets must have the same number of files.');
-  }
+  if (!validation.ok) throw new Error(validation.message);
 
   const timestamp = Date.now();
   const items = [];
@@ -357,6 +351,45 @@ export async function buildBatchSavedComparisons(filesA = [], filesB = []) {
   }
 
   return items;
+}
+
+export function getBatchPairValidation(filesA = [], filesB = []) {
+  const countA = Array.from(filesA || []).filter((file) => file?.type?.startsWith('image/')).length;
+  const countB = Array.from(filesB || []).filter((file) => file?.type?.startsWith('image/')).length;
+  const minimumReady = countA >= BATCH_MIN_PAIRS && countB >= BATCH_MIN_PAIRS;
+  const countsMatch = countA === countB;
+  const ok = minimumReady && countsMatch;
+
+  if (!minimumReady) {
+    return {
+      countA,
+      countB,
+      minimumReady,
+      countsMatch,
+      ok,
+      message: `Batch mode requires at least ${BATCH_MIN_PAIRS} images in each set.`,
+    };
+  }
+
+  if (!countsMatch) {
+    return {
+      countA,
+      countB,
+      minimumReady,
+      countsMatch,
+      ok,
+      message: 'Image A and Image B sets must have the same number of files.',
+    };
+  }
+
+  return {
+    countA,
+    countB,
+    minimumReady,
+    countsMatch,
+    ok,
+    message: `Ready to build ${countA} pairs.`,
+  };
 }
 
 export function deleteSavedComparison(id) {
