@@ -6,7 +6,15 @@ import { restoreSession, scheduleSessionSave } from './session.js';
 import { clearSession } from './storage.js';
 import { getRecentFiles } from './recent.js';
 import { nextCandidate, prevCandidate, refreshQueueStatus } from './queue.js';
-import { renderSavedComparisons, saveCurrentComparison } from './comparisons.js';
+import {
+  addSavedComparisons,
+  buildBatchSavedComparisons,
+  exportSavedComparisonsToJsonFile,
+  importSavedComparisonsFromJsonFile,
+  renderSavedComparisons,
+  restoreSavedComparison,
+  saveCurrentComparison,
+} from './comparisons.js';
 import { exportCurrentComparison } from './export.js';
 import { renderMetadataPanel } from './metadata.js';
 
@@ -383,6 +391,104 @@ function bindExport() {
   });
 }
 
+function bindSavedComparisonsJsonActions() {
+  dom.exportComparesBtn.addEventListener('click', () => {
+    exportSavedComparisonsToJsonFile();
+  });
+
+  dom.importComparesBtn.addEventListener('click', () => {
+    dom.importComparesInput.click();
+  });
+
+  dom.importComparesInput.addEventListener('change', async () => {
+    const file = dom.importComparesInput.files?.[0];
+    if (!file) return;
+
+    try {
+      const importedCount = await importSavedComparisonsFromJsonFile(file);
+      if (!importedCount) {
+        window.alert('No valid comparisons were found in that JSON file.');
+      } else {
+        window.alert(`Imported ${importedCount} comparison${importedCount === 1 ? '' : 's'}.`);
+      }
+    } catch (error) {
+      console.warn('Import comparisons failed', error);
+      window.alert('Could not import comparisons from that JSON file.');
+    } finally {
+      dom.importComparesInput.value = '';
+    }
+  });
+}
+
+function bindBatchScreen() {
+  let filesA = [];
+  let filesB = [];
+
+  const closeBatch = () => {
+    dom.batchScreen.classList.remove('on');
+    dom.batchScreen.setAttribute('aria-hidden', 'true');
+  };
+
+  const updateBatchStatus = () => {
+    const countA = filesA.length;
+    const countB = filesB.length;
+    const countsMatch = countA === countB && countA >= 5;
+    const minimumReady = countA >= 5 && countB >= 5;
+
+    if (!countA && !countB) {
+      dom.batchStatus.textContent = 'Select both sets to begin.';
+    } else if (!minimumReady) {
+      dom.batchStatus.textContent = `Need at least 5 images per side (A: ${countA}, B: ${countB}).`;
+    } else if (!countsMatch) {
+      dom.batchStatus.textContent = `Counts must match for pairing (A: ${countA}, B: ${countB}).`;
+    } else {
+      dom.batchStatus.textContent = `Ready to build ${countA} pair${countA === 1 ? '' : 's'}.`;
+    }
+
+    dom.batchBuildBtn.disabled = !countsMatch;
+  };
+
+  const openBatch = () => {
+    filesA = [];
+    filesB = [];
+    dom.batchFileA.value = '';
+    dom.batchFileB.value = '';
+    dom.batchScreen.classList.add('on');
+    dom.batchScreen.setAttribute('aria-hidden', 'false');
+    updateBatchStatus();
+  };
+
+  dom.batchOpenBtn.addEventListener('click', openBatch);
+  dom.batchCloseBtn.addEventListener('click', closeBatch);
+
+  dom.batchScreen.addEventListener('click', (event) => {
+    if (event.target === dom.batchScreen) closeBatch();
+  });
+
+  dom.batchFileA.addEventListener('change', () => {
+    filesA = Array.from(dom.batchFileA.files || []);
+    updateBatchStatus();
+  });
+
+  dom.batchFileB.addEventListener('change', () => {
+    filesB = Array.from(dom.batchFileB.files || []);
+    updateBatchStatus();
+  });
+
+  dom.batchBuildBtn.addEventListener('click', async () => {
+    try {
+      const built = await buildBatchSavedComparisons(filesA, filesB);
+      const added = addSavedComparisons(built);
+      if (added) restoreSavedComparison(built[0].id);
+      closeBatch();
+      window.alert(`Created ${added} batch comparison${added === 1 ? '' : 's'}.`);
+    } catch (error) {
+      console.warn('Batch build failed', error);
+      window.alert(error?.message || 'Could not build batch comparisons.');
+    }
+  });
+}
+
 function bindRecentFilesEvents() {
   window.addEventListener('recents-updated', renderRecentFiles);
 }
@@ -428,6 +534,8 @@ async function init() {
   bindQueueButtons();
   bindSaveComparison();
   bindExport();
+  bindSavedComparisonsJsonActions();
+  bindBatchScreen();
   bindRecentFilesEvents();
   bindResetButton();
   bindZoomPan();

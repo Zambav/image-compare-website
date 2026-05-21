@@ -67,6 +67,7 @@
       <button class="tool-btn tool-btn-subtle" id="prev-candidate-btn">← Prev</button>
       <button class="tool-btn tool-btn-subtle" id="next-candidate-btn">Next →</button>
       <button class="tool-btn" id="save-comparison-btn">+ Save Compare</button>
+      <button class="tool-btn" id="batch-open-btn">Batch Pairs</button>
       <button class="tool-btn" id="export-btn">⇩ Export PNG</button>
       <button class="tool-btn" id="flip-h-btn">⇋ Flip H</button>
       <button class="tool-btn" id="flip-v-btn">⇵ Flip V</button>
@@ -140,6 +141,11 @@
       <div class="saved-head">
         <div class="saved-title">Saved compares</div>
         <div class="saved-sub">Click any card to restore it</div>
+        <div class="saved-actions">
+          <button class="tool-btn saved-action-btn" id="export-compares-btn" type="button">Export JSON</button>
+          <button class="tool-btn saved-action-btn" id="import-compares-btn" type="button">Import JSON</button>
+          <input type="file" id="import-compares-input" accept=".json,application/json" hidden>
+        </div>
       </div>
       <div class="saved-list" id="saved-list">
         <div class="saved-empty">No saved comparisons yet</div>
@@ -147,6 +153,30 @@
     </aside>
   </div>
 
+</div>
+
+<div class="batch-screen" id="batch-screen" aria-hidden="true">
+  <div class="batch-panel">
+    <div class="batch-head">
+      <div>
+        <div class="saved-title">Batch image pairs</div>
+        <div class="saved-sub">Upload 5+ Image A files and 5+ Image B files with matching counts.</div>
+      </div>
+      <button class="tool-btn saved-action-btn" id="batch-close-btn" type="button">Close</button>
+    </div>
+    <div class="batch-grid">
+      <label class="batch-uploader">
+        <span class="batch-label">Image A set</span>
+        <input type="file" id="batch-file-a" accept="image/*" multiple>
+      </label>
+      <label class="batch-uploader">
+        <span class="batch-label">Image B set</span>
+        <input type="file" id="batch-file-b" accept="image/*" multiple>
+      </label>
+    </div>
+    <div class="batch-status" id="batch-status">Select both sets to begin.</div>
+    <button class="tool-btn" id="batch-build-btn" type="button">Build Compare List</button>
+  </div>
 </div>
 
 <script type="module" src="./js/app.js"></script>

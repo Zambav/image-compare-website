@@ -23,6 +23,8 @@
 - Saved comparison card timestamps and delete actions
 - Synchronized zoom and pan controls for deeper image inspection
 - Export PNG action, metadata inspection panel, and saved-comparisons-first workflow polish
+- Saved comparisons JSON export/import controls for local backup and restore
+- Batch pairs screen for building 5+ A/B saved comparison sets in one pass
 
 ### Changed
 - Promoted `image-compare v2.html` into a modular source version under `src/index.html`
@@ -41,3 +43,4 @@
 - Added delete controls and human-readable saved times so the comparison library is easier to manage over longer sessions
 - Added wheel zoom, shared pan offsets, reset-view behavior, and persistence of zoom/pan state in both session restore and saved comparisons
 - Added pan clamping, export-to-PNG, a metadata sidebar for loaded images, and reduced emphasis on queue-first controls when only a single comparison is active
+- Expanded saved comparisons capacity to better support large batch compare sessions

@@ -73,6 +73,8 @@ Image compare website/
 - export current comparison view to PNG
 - metadata sidebar showing file details and detected PNG text chunks
 - custom favicon and header logo from the provided brand image in `assets/`
+- saved comparisons JSON export/import for local backup and restore
+- batch pair workflow for creating 5+ saved A/B comparisons at once
 
 ## Recommended Next Refactor
 

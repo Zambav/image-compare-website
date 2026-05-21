@@ -3,7 +3,8 @@ import { dom } from './dom.js';
 import { applyAspectRatio, render, updateInfo } from './viewer.js';
 import { scheduleSessionSave } from './session.js';
 import { setSingleCandidate } from './queue.js';
-import { renderMetadataPanel } from './metadata.js';
+import { extractMetadata, renderMetadataPanel } from './metadata.js';
+import { loadDimensions } from './helpers.js';
 
 function loadImage(src) {
   return new Promise((resolve, reject) => {
@@ -35,7 +36,7 @@ function drawTransformed(ctx, img, width, height, opacity = 1, clipLeftRatio = n
   ctx.restore();
 }
 
-const MAX_SAVED = 12;
+const MAX_SAVED = 60;
 
 function shortName(name) {
   return (name || 'Untitled').replace(/\.[^.]+$/, '');
@@ -71,6 +72,66 @@ function blobToDataUrl(blob) {
   });
 }
 
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+function isDataImageUrl(value) {
+  return typeof value === 'string' && value.startsWith('data:image/');
+}
+
+function normalizeSavedItem(item) {
+  if (!item || typeof item !== 'object') return null;
+  if (!isDataImageUrl(item?.imageA?.dataUrl) || !isDataImageUrl(item?.imageB?.dataUrl)) return null;
+
+  return {
+    id: item.id || `cmp-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+    savedAt: Number.isFinite(item.savedAt) ? item.savedAt : Date.now(),
+    label: typeof item.label === 'string' ? item.label : `${shortName(item.nameA)} vs ${shortName(item.nameB)}`,
+    preview: isDataImageUrl(item.preview) ? item.preview : item.imageB.dataUrl,
+    nameA: typeof item.nameA === 'string' ? item.nameA : item?.imageA?.name || 'Image A',
+    nameB: typeof item.nameB === 'string' ? item.nameB : item?.imageB?.name || 'Image B',
+    imageA: {
+      name: item?.imageA?.name || 'Image A',
+      dataUrl: item.imageA.dataUrl,
+      w: Number(item?.imageA?.w) || 0,
+      h: Number(item?.imageA?.h) || 0,
+    },
+    imageB: {
+      name: item?.imageB?.name || 'Image B',
+      dataUrl: item.imageB.dataUrl,
+      w: Number(item?.imageB?.w) || 0,
+      h: Number(item?.imageB?.h) || 0,
+    },
+    mode: ['slider', 'dissolve', 'toggle'].includes(item.mode) ? item.mode : 'slider',
+    pos: typeof item.pos === 'number' ? Math.max(0.01, Math.min(0.99, item.pos)) : 0.5,
+    dissolve: typeof item.dissolve === 'number' ? Math.max(0, Math.min(1, item.dissolve)) : 0.5,
+    toggleFrame: item.toggleFrame === 'b' ? 'b' : 'a',
+    flipH: !!item.flipH,
+    flipV: !!item.flipV,
+    rotation: Number.isFinite(item.rotation) ? item.rotation : 0,
+    zoom: Number.isFinite(item.zoom) ? item.zoom : 1,
+    panX: Number.isFinite(item.panX) ? item.panX : 0,
+    panY: Number.isFinite(item.panY) ? item.panY : 0,
+    metaA: item.metaA || null,
+    metaB: item.metaB || null,
+  };
+}
+
+function readTextFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(file);
+  });
+}
+
 async function buildImageRecord(src, name, w, h) {
   // Try fetch first (for http URLs), fall back to canvas copy for blob/file URLs
   let dataUrl;
@@ -99,10 +160,7 @@ async function buildImageRecord(src, name, w, h) {
 
 export function hydrateSavedComparisons(items = []) {
   S.savedComparisons = Array.isArray(items)
-    ? items.map((item) => ({
-        ...item,
-        preview: item?.preview || item?.imageB?.dataUrl || '',
-      }))
+    ? items.map((item) => normalizeSavedItem(item)).filter(Boolean)
     : [];
 }
 
@@ -194,6 +252,111 @@ export async function saveCurrentComparison() {
   S.savedComparisons = S.savedComparisons.slice(0, MAX_SAVED);
   renderSavedComparisons();
   scheduleSessionSave();
+}
+
+export function addSavedComparisons(items = [], { replace = false } = {}) {
+  const normalized = (items || []).map((item) => normalizeSavedItem(item)).filter(Boolean);
+  if (!normalized.length) return 0;
+
+  S.savedComparisons = replace
+    ? normalized.slice(0, MAX_SAVED)
+    : [...normalized, ...S.savedComparisons].slice(0, MAX_SAVED);
+
+  renderSavedComparisons();
+  scheduleSessionSave();
+  return normalized.length;
+}
+
+export function exportSavedComparisonsToJsonFile() {
+  const payload = {
+    version: 1,
+    exportedAt: Date.now(),
+    comparisons: S.savedComparisons,
+  };
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const link = document.createElement('a');
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const url = URL.createObjectURL(blob);
+  link.href = url;
+  link.download = `saved-compares-${stamp}.json`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+export async function importSavedComparisonsFromJsonFile(file, { replace = false } = {}) {
+  if (!file) return 0;
+  const raw = await readTextFile(file);
+  const parsed = JSON.parse(raw);
+  const list = Array.isArray(parsed) ? parsed : parsed?.comparisons;
+  if (!Array.isArray(list)) throw new Error('Invalid JSON format');
+  return addSavedComparisons(list, { replace });
+}
+
+async function fileToImageRecord(file) {
+  const url = URL.createObjectURL(file);
+  let dims = { w: 0, h: 0 };
+
+  try {
+    dims = await loadDimensions(url);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+
+  return {
+    image: {
+      name: file.name,
+      dataUrl: await fileToDataUrl(file),
+      w: dims.w,
+      h: dims.h,
+    },
+    meta: await extractMetadata(file, dims),
+  };
+}
+
+export async function buildBatchSavedComparisons(filesA = [], filesB = []) {
+  const listA = Array.from(filesA || []).filter((file) => file?.type?.startsWith('image/'));
+  const listB = Array.from(filesB || []).filter((file) => file?.type?.startsWith('image/'));
+
+  if (listA.length < 5 || listB.length < 5) {
+    throw new Error('Batch mode requires at least 5 images in each set.');
+  }
+
+  if (listA.length !== listB.length) {
+    throw new Error('Image A and Image B sets must have the same number of files.');
+  }
+
+  const timestamp = Date.now();
+  const items = [];
+
+  for (let i = 0; i < listA.length; i += 1) {
+    const [recordA, recordB] = await Promise.all([fileToImageRecord(listA[i]), fileToImageRecord(listB[i])]);
+
+    items.push({
+      id: `cmp-batch-${timestamp}-${i}`,
+      savedAt: timestamp + i,
+      label: `${shortName(recordA.image.name)} vs ${shortName(recordB.image.name)}`,
+      preview: recordB.image.dataUrl,
+      nameA: recordA.image.name,
+      nameB: recordB.image.name,
+      imageA: recordA.image,
+      imageB: recordB.image,
+      mode: 'slider',
+      pos: 0.5,
+      dissolve: 0.5,
+      toggleFrame: 'a',
+      flipH: false,
+      flipV: false,
+      rotation: 0,
+      zoom: 1,
+      panX: 0,
+      panY: 0,
+      metaA: recordA.meta,
+      metaB: recordB.meta,
+    });
+  }
+
+  return items;
 }
 
 export function deleteSavedComparison(id) {
